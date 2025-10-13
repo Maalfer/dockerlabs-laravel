@@ -13,7 +13,7 @@
                         {{ $maquina->dificultad_etiqueta }}
                     </span>
 
-                    <!-- Bot�n de descripci�n (abre modal) -->
+                   
                     <button
                         class="btn btn-xs btn-outline open-desc"
                         type="button"
@@ -24,7 +24,7 @@
                         Descripci�n
                     </button>
 
-                    <!-- Botones de acci�n SOLO con iconos -->
+                    
                     <button
                         class="btn btn-xs btn-icon open-upload"
                         type="button"
@@ -36,7 +36,7 @@
                         <i class="fas fa-upload" aria-hidden="true"></i>
                     </button>
 
-                    <!-- Bot�n de Descargar: ahora vinculado al enlace de descarga -->
+                   
                     @if($maquina->enlace_descarga)
                         <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar">
                             <i class="fas fa-download" aria-hidden="true"></i>
@@ -47,7 +47,7 @@
                         </button>
                     @endif
 
-                    <!-- Libro: abrir modal con writeups aprobados -->
+                    
                     <button
                         class="btn btn-xs btn-icon open-book"
                         type="button"
@@ -61,7 +61,7 @@
                 </div>
             </article>
 
-            <!-- Modal de descripci�n (uno por m�quina) -->
+           
             <div
                 id="desc-{{ $maquina->id ?? $loop->index }}"
                 class="modal"
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <!-- Modal de Upload (uno por m�quina) -->
+          
             <div
                 id="upload-{{ $maquina->id ?? $loop->index }}"
                 class="modal"
@@ -148,7 +148,7 @@
                 </div>
             </div>
 
-            <!-- Modal del Libro (writeups aprobados, uno por m�quina) -->
+            
             <div
                 id="book-{{ $maquina->id ?? $loop->index }}"
                 class="modal"
@@ -191,14 +191,14 @@
         @endforeach
     </div>
 
-    <!-- JS m�nimo para abrir/cerrar modales -->
+
     <script>
       (function () {
         const open = (el) => { el?.classList.add('open'); el?.setAttribute('aria-hidden', 'false'); };
         const close = (el) => { el?.classList.remove('open'); el?.setAttribute('aria-hidden', 'true'); };
 
         document.addEventListener('click', (e) => {
-          // Abrir modal de descripci�n
+ 
           if (e.target.closest('.open-desc')) {
             const btn = e.target.closest('.open-desc');
             const id = btn.getAttribute('data-target');
@@ -206,7 +206,7 @@
             open(modal);
           }
 
-          // Abrir modal de upload
+
           if (e.target.closest('.open-upload')) {
             const btn = e.target.closest('.open-upload');
             const id = btn.getAttribute('data-target');
@@ -214,7 +214,7 @@
             open(modal);
           }
 
-          // Abrir modal del libro (writeups aprobados)
+    
           if (e.target.closest('.open-book')) {
             const btn = e.target.closest('.open-book');
             const id = btn.getAttribute('data-target');
@@ -222,14 +222,14 @@
             open(modal);
           }
 
-          // Cerrar (bot�n cerrar o clic en overlay)
+       
           if (e.target.matches('.modal-close') || (e.target.matches('.modal') && !e.target.querySelector('.modal-card:hover'))) {
             const modal = e.target.closest('.modal');
             close(modal);
           }
         });
 
-        // Cerrar con ESC
+     
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             document.querySelectorAll('.modal.open').forEach(close);
