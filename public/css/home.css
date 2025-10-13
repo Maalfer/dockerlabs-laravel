@@ -1,0 +1,474 @@
+:root{
+  --bg-deep: #0f1e35;        /* azul marino principal */
+  --brand-600: #1b2f4b;      /* header/footer (m�s claro) */
+  --brand-500: #234366;      /* hover */
+  --text: #e6eef8;           /* texto sobre fondo oscuro */
+  --muted: #a7b4c6;
+  --link: #8ab4f8;
+  --border: rgba(255,255,255,0.12);
+  --surface: #16263d;
+  --shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  line-height: 1.5;
+}
+
+/* ===== Header fijo arriba ===== */
+.site-header {
+  background: var(--brand-600);
+  border-bottom: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* ===== Footer fijo abajo ===== */
+.site-footer {
+  background: var(--brand-600);
+  border-top: 1px solid var(--border);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.header-inner, .footer-inner, .main-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+}
+
+.site-title {
+  margin: 0 0 .25rem 0;
+  font-size: 1.5rem;
+  letter-spacing: .2px;
+}
+
+/* ===== Navegaci�n ===== */
+.nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.nav a, .nav button.nav-link{
+  color: var(--text);
+  text-decoration: none;
+  padding: .4rem .65rem;
+  border-radius: .5rem;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font: inherit;
+}
+.nav a:hover, .nav button.nav-link:hover{
+  background: var(--brand-500);
+  border-color: var(--border);
+}
+
+/* ===== Main con espacio para header y footer fijos ===== */
+main {
+  flex: 1;
+  padding-top: 80px;    /* altura reservada para header */
+  padding-bottom: 60px; /* altura reservada para footer */
+  min-height: calc(100vh - 140px);
+}
+
+.hero h2 {
+  margin-top: 0;
+  font-size: 2rem;
+}
+
+/* =========================================================
+   HOME NUEVO: Listado en tiras horizontales (2 columnas)
+   ========================================================= */
+.machines-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+
+@media (max-width: 960px){
+  .machines-grid{ grid-template-columns: 1fr; }
+}
+
+.machine-row{
+  display: grid;
+  grid-template-columns: 1fr auto;  /* texto a la izquierda, acciones a la derecha */
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  min-height: 56px;                 /* sensaci�n de \u201ctira\u201d estrecha */
+}
+
+.machine-main{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;                     /* necesario para elipsis */
+}
+
+.machine-name{
+  font-weight: 700;
+  font-size: .95rem;
+  white-space: nowrap;
+}
+
+.machine-desc{
+  color: var(--muted);
+  font-size: .9rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;          /* \u201c\u2026\u201d si no cabe */
+  flex: 1;
+}
+
+/* Acciones a la derecha (puedes usar iconos m�s tarde) */
+.machine-actions .btn{
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: .9rem;
+  cursor: pointer;
+}
+.machine-actions .btn:hover{
+  background: var(--brand-500);
+}
+
+/* Badges de dificultad en HOME (compactas) */
+.badge{
+  display: inline-flex;
+  align-items: center;
+  font-size: .8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+/* Colores de badge (compatibles con tu back-end) */
+.badge--easy   { background-color: #28a745; border-color: #1e7e34; color:#fff; }
+.badge--medium { background-color: #ff9800; border-color: #e68900; color:#fff; }
+.badge--hard   { background-color: #f44336; border-color: #d32f2f; color:#fff; }
+.badge--unknown{ background-color: #6c757d; border-color: #545b62; color:#fff; }
+
+/* Bot�n reutilizable mini */
+.btn-xs{ padding: 6px 10px; font-size: .85rem; }
+
+/* =========================================================
+   (Antiguo) Grid de tarjetas del HOME \u2014 lo conservo por si
+   lo usas en otra vista. No interfiere con el nuevo HOME.
+   ========================================================= */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+.card {
+  background-color: #1e2a47;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+/* ===== Bot�n usado en HOME (general) ===== */
+.btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===== Footer note opcional ===== */
+.footer-note{
+  margin: 0;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+/* ===== Admin page styles (solo esta p�gina) ===== */
+
+/* Contenedor principal de admin */
+.admin-page .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Mensajes flash */
+.admin-page .alert {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.admin-page .alert-success {
+  background: #052e1c;
+  border: 1px solid #16a34a;
+  color: #bbf7d0;
+}
+.admin-page .alert-error {
+  background: #3f0a0a;
+  border: 1px solid #ef4444;
+  color: #fecaca;
+}
+
+/* T�tulos */
+.admin-page h2 {
+  margin: 0 0 12px 0;
+  font-size: 1.4rem;
+}
+
+/* Formulario alta de m�quina */
+.admin-page .form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 10px;
+  background: #16263d;              /* surface */
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.admin-page .form-row {
+  display: grid;
+  gap: 6px;
+}
+.admin-page label {
+  display: block;
+  margin-bottom: .35rem;
+  color: #a7b4c6;                   /* muted */
+  font-weight: 600;
+}
+.admin-page .form-control {
+  background: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 12px;
+  outline: none;
+}
+.admin-page textarea.form-control { resize: vertical; }
+.admin-page .form-control:focus {
+  border-color: #8ab4f8;
+  box-shadow: 0 0 0 3px rgba(138,180,248,.15);
+}
+
+/* Botones */
+.admin-page .btn {
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+}
+.admin-page .btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.admin-page .btn-primary:hover {
+  background: #1e4fd4;
+}
+.admin-page .btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+.admin-page .btn-danger:hover {
+  background: #b91c1c;
+}
+
+/* Separador */
+.admin-page .divider {
+  border: none;
+  height: 1px;
+  background: #334155;
+  margin: 20px 0;
+}
+
+/* Tabla de m�quinas */
+.admin-page .table-wrap { overflow-x: auto; }
+.admin-page table.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #16263d;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.admin-page table.table thead th {
+  background: #0b1220;
+  position: sticky;
+  top: 0; /* respeta el scroll dentro del contenedor */
+}
+.admin-page table.table th,
+.admin-page table.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #334155;
+  text-align: left;
+  vertical-align: top;
+  color: #e6eef8;
+}
+.admin-page table.table tbody tr:hover {
+  background: #14213b;
+}
+
+/* Badges de dificultad (duplicadas aqu� solo para admin) */
+.admin-page .badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  user-select: none;
+  margin: 2px 0;
+}
+.admin-page .badge--easy   { background-color: #28a745; border-color: #1e7e34; color:#fff; }
+.admin-page .badge--medium { background-color: #ff9800; border-color: #e68900; color:#fff; }
+.admin-page .badge--hard   { background-color: #f44336; border-color: #d32f2f; color:#fff; }
+.admin-page .badge--unknown{ background-color: #6c757d; border-color: #545b62; color:#fff; }
+
+/* Nota / textos secundarios */
+.admin-page .muted { color: #a7b4c6; }
+
+/* Ajustes menores responsivos */
+@media (max-width: 960px) {
+  .admin-page .container { padding: 16px; }
+  .admin-page table.table th[style],
+  .admin-page table.table td[style] { width: auto !important; }
+}
+
+@media (max-width: 640px) {
+  .admin-page h2 { font-size: 1.2rem; }
+  .admin-page .btn { width: 100%; }
+}
+
+/* ===== Modal gen�rico para descripciones ===== */
+.modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0,0,0,0.5);
+  z-index: 1100; /* por encima del header fijo */
+}
+.modal.open{ display: flex; }
+
+.modal-card{
+  width: min(720px, 96vw);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.modal-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #0b1220;
+}
+.modal-title{
+  margin: 0;
+  font-size: 1rem;
+}
+
+.modal-close{
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-close:hover{ background: var(--brand-500); }
+
+.modal-body{
+  padding: 16px;
+  line-height: 1.6;
+  color: #dbe7fb;
+}
+
+.modal-footer{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: #0b1220;
+}
+
+/* Bot�n outline para el trigger "Descripci�n" */
+.btn-outline{
+  background: transparent;
+  border: 1px solid var(--border);
+}
+.btn-outline:hover{
+  background: var(--brand-500);
+}
+
+/* Asegura que el preview siga truncando en la fila */
+.machine-main{ min-width: 0; }
+.machine-desc{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  cursor: pointer;
+}
+.btn-icon:hover {
+  background: var(--brand-500);
+}
+.btn-icon i {
+  font-size: 0.9rem;
+}
+
