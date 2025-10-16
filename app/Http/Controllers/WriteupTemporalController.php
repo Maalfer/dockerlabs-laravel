@@ -19,7 +19,6 @@ class WriteupTemporalController extends Controller
             'enlace.url' => 'El enlace debe ser una URL válida (incluye http/https).'
         ]);
 
-        // Normaliza enlace (opcional)
         if (! Str::startsWith($data['enlace'], ['http://', 'https://'])) {
             $data['enlace'] = 'https://' . ltrim($data['enlace'], '/');
         }

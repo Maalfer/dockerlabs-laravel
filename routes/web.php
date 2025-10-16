@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\WriteupTemporalAdminController;
 use App\Http\Controllers\Admin\WriteupAdminController;
 use App\Http\Controllers\EnviarMaquinaController;
 use App\Http\Controllers\Admin\MaquinaRecibidaController;
+use App\Http\Controllers\MisWriteupsController;
+use App\Http\Controllers\ProfileController;
 
 // Home
 Route::get('/', [HomeController::class, 'index']);
@@ -26,9 +28,23 @@ Route::middleware([IsAdmin::class])->group(function () {
     });
 });
 
+Route::middleware('auth')->group(function () {
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+});
+
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/maquinas-recibidas', [MaquinaRecibidaController::class, 'index'])
         ->name('maquinas.recibidas');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/mis-writeups', [MisWriteupsController::class, 'index'])
+        ->name('mis-writeups.index');
+
+    // Nueva: el user solicita cambio de enlace de un writeup ya aprobado
+    Route::post('/mis-writeups/{writeup}/solicitar-cambio', [MisWriteupsController::class, 'solicitarCambio'])
+        ->name('mis-writeups.solicitar-cambio');
 });
 
 
@@ -41,37 +57,28 @@ Route::post('/enviar-maquina', [EnviarMaquinaController::class, 'store'])
 
 Route::get('/admin/writeups', [WriteupAdminController::class, 'index'])
     ->name('admin.writeups.index')
-    ->middleware('auth'); // opcional
+    ->middleware('auth');
 
-// Admin (gestión de máquinas)
 Route::get('admin', [MaquinaController::class, 'index'])->name('admin');
 Route::post('admin/maquinas', [MaquinaController::class, 'store'])->name('admin.maquinas.store');
 Route::delete('admin/maquinas/{maquina}', [MaquinaController::class, 'destroy'])->name('admin.maquinas.destroy');
 
-// Acciones de auth
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/registro', [AuthController::class, 'register']);
 
-// Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Dashboard protegido
-Route::get('/dashboard', fn () => view('dashboard'))->middleware('auth')->name('dashboard');
-
-// Envío de writeups temporales (desde el modal de Upload en el home)
 Route::post('/writeups-temporal', [WriteupTemporalController::class, 'store'])
     ->name('writeups-temporal.store');
 
-// Listado admin de writeups temporales
 Route::get('/admin/writeups-temporal', [WriteupTemporalAdminController::class, 'index'])
     ->name('admin.writeups-temporal.index')
-    ->middleware('auth'); // opcional
+    ->middleware('auth'); 
 
-// === NUEVO: aprobar y eliminar writeups temporales ===
 Route::post('/admin/writeups-temporal/{id}/approve', [WriteupTemporalAdminController::class, 'approve'])
     ->name('admin.writeups-temporal.approve')
-    ->middleware('auth'); // opcional
+    ->middleware('auth'); 
 
 Route::delete('/admin/writeups-temporal/{id}', [WriteupTemporalAdminController::class, 'destroy'])
     ->name('admin.writeups-temporal.destroy')
-    ->middleware('auth'); // opcional
+    ->middleware('auth'); 

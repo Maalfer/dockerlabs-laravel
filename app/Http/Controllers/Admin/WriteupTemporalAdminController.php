@@ -10,32 +10,78 @@ use Illuminate\Support\Facades\DB;
 
 class WriteupTemporalAdminController extends Controller
 {
+    /**
+     * Lista de solicitudes temporales (nuevas y ediciones)
+     */
     public function index()
     {
-        $items = WriteupTemporal::with('maquina')->latest()->paginate(20);
+        // Cargamos también 'writeup' para poder mostrar el origen en ediciones
+        $items = WriteupTemporal::with(['maquina', 'writeup'])
+            ->latest()
+            ->paginate(20);
+
         return view('admin.writeups-temporal-index', compact('items'));
     }
 
+    /**
+     * Aprueba una solicitud temporal:
+     * - Si es EDICIÓN (tipo='edicion' o tiene writeup_id), ACTUALIZA el writeup original.
+     * - Si es ALTA nueva, crea el writeup (evitando duplicados exactos).
+     * En ambos casos, elimina la temporal.
+     */
     public function approve($id)
     {
-        DB::transaction(function () use ($id) {
-            $temp = WriteupTemporal::lockForUpdate()->findOrFail($id);
+        $mensaje = 'Solicitud aplicada correctamente.';
 
-            // Crea el writeup aprobado
-            Writeup::create([
-                'maquina_id' => $temp->maquina_id,
-                'autor'      => $temp->autor,
-                'enlace'     => $temp->enlace,
-            ]);
+        DB::transaction(function () use ($id, &$mensaje) {
+            // Bloqueamos la fila temporal para consistencia
+            $temp = WriteupTemporal::with('writeup')->lockForUpdate()->findOrFail($id);
 
-            // Puedes eliminar el temporal o marcarlo como aprobado
-            $temp->delete();
-            // o: $temp->update(['estado' => 'aprobado']);
+            // Detectar edición por cualquiera de las dos vías (robusto ante datos antiguos)
+            $esEdicion = ($temp->tipo === 'edicion') || !is_null($temp->writeup_id);
+
+            if ($esEdicion && $temp->writeup_id) {
+                // ===== EDICIÓN: actualizar el writeup ya existente =====
+                $w = Writeup::lockForUpdate()->findOrFail($temp->writeup_id);
+
+                // Actualiza solo el enlace (comportamiento recomendado para conservar ID/timestamps)
+                $w->update([
+                    'enlace' => $temp->enlace,
+                ]);
+
+                // Elimina la solicitud temporal
+                $temp->delete();
+
+                $mensaje = 'Edición aplicada: enlace actualizado y solicitud eliminada.';
+            } else {
+                // ===== ALTA NUEVA: crear writeup aprobado (evitando duplicados exactos) =====
+                $existe = Writeup::where('maquina_id', $temp->maquina_id)
+                    ->where('autor', $temp->autor)
+                    ->where('enlace', $temp->enlace)
+                    ->exists();
+
+                if (!$existe) {
+                    Writeup::create([
+                        'maquina_id' => $temp->maquina_id,
+                        'autor'      => $temp->autor,
+                        'enlace'     => $temp->enlace,
+                    ]);
+                    $mensaje = 'Writeup aprobado y publicado.';
+                } else {
+                    $mensaje = 'El writeup ya existía; se descartó el duplicado y se eliminó la solicitud.';
+                }
+
+                // Elimina la solicitud temporal
+                $temp->delete();
+            }
         });
 
-        return back()->with('success', 'Writeup aprobado y publicado.');
+        return back()->with('success', $mensaje);
     }
 
+    /**
+     * Elimina una solicitud temporal (rechazo)
+     */
     public function destroy($id)
     {
         WriteupTemporal::findOrFail($id)->delete();

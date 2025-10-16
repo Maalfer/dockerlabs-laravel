@@ -21,7 +21,7 @@
                         aria-haspopup="dialog"
                         aria-controls="desc-{{ $maquina->id ?? $loop->index }}"
                     >
-                        Descripci�n
+                        Descripción
                     </button>
 
                     
@@ -73,7 +73,7 @@
                 <div class="modal-card" role="document">
                     <header class="modal-header">
                         <h3 id="desc-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }} \u2014 Descripci�n
+                            {{ $maquina->nombre }}  Descripción
                         </h3>
                         <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
                     </header>
@@ -100,7 +100,7 @@
                 <div class="modal-card" role="document">
                     <header class="modal-header">
                         <h3 id="upload-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }} \u2014 Enviar writeup
+                            {{ $maquina->nombre }} — Enviar writeup
                         </h3>
                         <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
                     </header>
@@ -160,7 +160,7 @@
                 <div class="modal-card" role="document">
                     <header class="modal-header">
                         <h3 id="book-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }} \u2014 Writeups aprobados
+                            {{ $maquina->nombre }} Writeups aprobados
                         </h3>
                         <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
                     </header>
@@ -170,16 +170,19 @@
                             <ul style="margin:0; padding-left:18px; display:grid; gap:6px;">
                                 @foreach ($maquina->writeups as $w)
                                     <li>
-                                        <strong>{{ $w->autor }}:</strong>
+                                        {{-- DORADO si el autor existe como usuario registrado --}}
+                                        <strong @if($w->user) style="color:#DAA520; font-weight:700" @endif>
+                                            {{ $w->autor }}:
+                                        </strong>
                                         <a href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
                                             {{ \Illuminate\Support\Str::limit($w->enlace, 80) }}
                                         </a>
-                                        <small style="opacity:.7;"> \u2014 {{ $w->created_at->format('Y-m-d') }}</small>
+                                        <small style="opacity:.7;"> — {{ $w->created_at->format('Y-m-d') }}</small>
                                     </li>
                                 @endforeach
                             </ul>
                         @else
-                            <p>No hay writeups aprobados todav�a.</p>
+                            <p>No hay writeups aprobados todavía.</p>
                         @endif
                     </div>
 

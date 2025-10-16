@@ -8,10 +8,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Obtener todas las máquinas
-        $maquinas = Maquina::all();
+        // Antes: Maquina::all();
+        // Ahora: carga writeups + el user del autor para evitar N+1
+        $maquinas = Maquina::with(['writeups.user'])->get();
 
-        // Pasar las máquinas a la vista
         return view('home', compact('maquinas'));
     }
 }

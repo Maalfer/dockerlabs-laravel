@@ -13,11 +13,12 @@
     {{-- Header --}}
     @include('partials.header')
 
-    {{-- Men� de navegaci�n extra para admins --}}
+    {{-- Enlace adicional: Mis Writeups, solo para usuarios logueados --}}
     @auth
         <nav class="nav" style="margin: 10px auto; max-width:1100px; padding: 0 1rem;">
+            {{-- Botones de administración (solo visibles a los logueados con permisos) --}}
             <a href="{{ route('admin') }}">
-                <i class="fas fa-cogs"></i> Admin
+                <i class="fas fa-cogs"></i> Agregar Máquina
             </a>
             <a href="{{ route('admin.writeups-temporal.index') }}">
                 <i class="fas fa-hourglass-half"></i> Pendientes
@@ -25,13 +26,12 @@
             <a href="{{ route('admin.writeups.index') }}">
                 <i class="fas fa-check-circle"></i> Aprobados
             </a>
-
             <a href="{{ route('admin.maquinas.recibidas') }}">
                 <i class="fas fa-inbox"></i> Recibidas
             </a>
+
         </nav>
     @endauth
-
 
     {{-- Contenido principal --}}
     <main>
