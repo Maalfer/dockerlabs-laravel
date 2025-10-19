@@ -103,8 +103,10 @@ Route::middleware([
 // Listado de writeups publicados (solo autenticado)
 Route::get('/admin/writeups', [WriteupAdminController::class, 'index'])
     ->name('admin.writeups.index')
-    ->middleware('auth');
-
+    ->middleware([
+        'auth',
+        \App\Http\Middleware\RoleMiddleware::class . ':admin,moderator',
+    ]);
 // Writeups temporales: envío público
 Route::post('/writeups-temporal', [WriteupTemporalController::class, 'store'])
     ->name('writeups-temporal.store');

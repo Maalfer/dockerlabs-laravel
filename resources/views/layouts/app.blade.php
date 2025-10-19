@@ -17,19 +17,34 @@
     @auth
         <nav class="nav" style="margin: 10px auto; max-width:1100px; padding: 0 1rem;">
             {{-- Botones de administración (solo visibles a los logueados con permisos) --}}
-            <a href="{{ route('admin') }}">
-                <i class="fas fa-cogs"></i> Agregar Máquina
-            </a>
-            <a href="{{ route('admin.writeups-temporal.index') }}">
-                <i class="fas fa-hourglass-half"></i> Pendientes
-            </a>
-            <a href="{{ route('admin.writeups.index') }}">
-                <i class="fas fa-check-circle"></i> Aprobados
-            </a>
-            <a href="{{ route('admin.maquinas.recibidas') }}">
-                <i class="fas fa-inbox"></i> Recibidas
-            </a>
+            
+            {{-- Agregar Máquina: SOLO ADMIN --}}
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin') }}">
+                    <i class="fas fa-cogs"></i> Agregar Máquina
+                </a>
+            @endif
 
+            {{-- Pendientes: ADMIN o MODERADOR --}}
+            @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
+                <a href="{{ route('admin.writeups-temporal.index') }}">
+                    <i class="fas fa-hourglass-half"></i> Pendientes
+                </a>
+            @endif
+
+            {{-- Aprobados: ADMIN o MODERADOR --}}
+            @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
+                <a href="{{ route('admin.writeups.index') }}">
+                    <i class="fas fa-check-circle"></i> Aprobados
+                </a>
+            @endif
+
+            {{-- Recibidas: ADMIN o MODERADOR --}}
+            @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
+                <a href="{{ route('admin.maquinas.recibidas') }}">
+                    <i class="fas fa-inbox"></i> Recibidas
+                </a>
+            @endif
         </nav>
     @endauth
 
