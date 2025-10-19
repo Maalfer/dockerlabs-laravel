@@ -7,13 +7,56 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
+// Importa los modelos que ya usas en el proyecto
+use App\Models\Writeup;
+use App\Models\WriteupTemporal;
+use App\Models\EnvioMaquina;
+use App\Models\Maquina;
+
 class ProfileController extends Controller
 {
-    // GET /perfil  -> muestra el formulario
+    // GET /perfil  -> muestra el formulario + resumen/estadísticas
     public function edit()
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+
+        // ---- Estadísticas sincronizadas con BD ----
+        // Nota: Usamos coincidencia por nombre/email (columnas presentes en tu esquema)
+        // para atribuir envíos al usuario actual sin requerir user_id.
+        $writeupsPendUser = WriteupTemporal::query()
+            ->where('autor', $user->name)
+            ->orWhere('autor_email', $user->email)
+            ->count();
+
+        $writeupsAprobUser = Writeup::query()
+            ->where('autor', $user->name)
+            ->orWhere('autor_email', $user->email)
+            ->count();
+
+        $maquinasEnvUser = EnvioMaquina::query()
+            ->where('autor', $user->name)
+            ->orWhere('autor_email', $user->email)
+            ->count();
+
+        // Si no hay trazabilidad directa de "autor" en Maquina, mostramos globales.
+        $maquinasAprobGlobal = Maquina::query()->count();
+
+        // Globales útiles para moderación/resumen
+        $writeupsAprobGlobal = Writeup::query()->count();
+        $writeupsPendGlobal  = WriteupTemporal::query()->count();
+
+        $stats = [
+            'writeups_pendientes_user'      => $writeupsPendUser,
+            'writeups_aprobados_user'       => $writeupsAprobUser,
+            'maquinas_enviadas_user'        => $maquinasEnvUser,
+            'maquinas_aprobadas_global'     => $maquinasAprobGlobal,
+            'writeups_aprobados_global'     => $writeupsAprobGlobal,
+            'writeups_pendientes_global'    => $writeupsPendGlobal,
+            // bandera para la vista (indicamos que no hay conteo “tuyo” de máquinas aprobadas)
+            'maquinas_aprobadas_user_known' => false,
+        ];
+
+        return view('profile.edit', compact('user', 'stats'));
     }
 
     // PUT /perfil  -> procesa la actualización
