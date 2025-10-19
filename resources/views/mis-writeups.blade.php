@@ -3,66 +3,69 @@
 @section('title', 'Mis Writeups')
 
 @section('content')
-<div class="container" style="display:grid; gap:24px;">
+<div class="container writeups" style="display:grid; gap:24px;">
 
     {{-- Flash messages --}}
     @if(session('success'))
-        <div class="alert" style="padding:.75rem; background:#e6ffed; border:1px solid #b7f5c9; color:#0a572a;">
+        <div class="alert alert--success">
             {{ session('success') }}
         </div>
     @endif
+
     @if ($errors->any())
-        <div class="alert" style="padding:.75rem; background:#fff5f5; border:1px solid #ffd6d6; color:#7a1a1a;">
+        <div class="alert alert--error">
             {{ $errors->first() }}
         </div>
     @endif
 
-    <header>
-        <h1 style="margin:0;">Mis Writeups</h1>
-        <p style="opacity:.8; margin:.25rem 0 0;">
+    <header class="wu-header">
+        <h1 class="wu-title">Mis Writeups</h1>
+        <p class="wu-subtitle">
             {{ $user->name }} — aquí tienes todos tus envíos.
         </p>
     </header>
 
     {{-- Aprobados --}}
-    <section>
-        <h2 style="margin:0 0 .5rem 0;">Aprobados ({{ $aprobados->count() }})</h2>
+    <section class="wu-section">
+        <h2 class="wu-h2">Aprobados ({{ $aprobados->count() }})</h2>
 
         @if($aprobados->isEmpty())
-            <div class="alert" style="padding:.75rem; background:#f6f6f6; border:1px solid #eee;">
+            <div class="alert alert--empty">
                 Aún no tienes writeups aprobados.
             </div>
         @else
-            <ul style="margin:0; padding-left:18px; display:grid; gap:12px;">
+            <ul class="wu-list">
                 @foreach($aprobados as $w)
                     @php
-                        // Si el controlador pasó $pendientesEdicion como keyBy('writeup_id'):
                         $pend = isset($pendientesEdicion) ? $pendientesEdicion->get($w->id ?? null) : null;
                     @endphp
-                    <li style="display:grid; gap:6px;">
-                        <div style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
-                            <span>
+
+                    <li class="wu-item card">
+                        <div class="wu-row">
+                            <span class="wu-meta">
                                 <strong>{{ $w->maquina->nombre ?? 'Máquina' }}</strong>
-                                <small style="opacity:.7;">— {{ $w->created_at?->format('Y-m-d') }}</small>
+                                <small class="wu-date">— {{ $w->created_at?->format('Y-m-d') }}</small>
                             </span>
-                            <a href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
+
+                            <a class="wu-link" href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
                                 {{ \Illuminate\Support\Str::limit($w->enlace, 90) }}
                             </a>
 
                             @if($pend)
-                                <span class="badge" style="margin-left:auto; font-size:.75rem; background:#fff3cd; border:1px solid #ffeeba; padding:.15rem .4rem; border-radius:4px;">
+                                <span class="badge-soft badge-soft--warn" style="margin-left:auto;">
                                     Edición pendiente
                                 </span>
                             @endif
                         </div>
 
-                        {{-- Formulario para solicitar cambio de enlace (solo si NO hay edición pendiente) --}}
                         @unless($pend)
-                        <form method="POST" action="{{ route('mis-writeups.solicitar-cambio', $w->id) }}"
-                              style="display:grid; gap:6px; max-width:720px;">
+                        <form method="POST"
+                              action="{{ route('mis-writeups.solicitar-cambio', $w->id) }}"
+                              class="wu-form">
                             @csrf
-                            <label style="display:grid; gap:4px;">
-                                <span style="font-size:.9rem; opacity:.8;">Cambiar enlace</span>
+
+                            <label class="wu-field">
+                                <span class="wu-label">Cambiar enlace</span>
                                 <input
                                     type="url"
                                     name="enlace"
@@ -73,8 +76,8 @@
                                     maxlength="2048">
                             </label>
 
-                            <label style="display:grid; gap:4px;">
-                                <span style="font-size:.9rem; opacity:.8;">Comentario (opcional)</span>
+                            <label class="wu-field">
+                                <span class="wu-label">Comentario (opcional)</span>
                                 <input
                                     type="text"
                                     name="comentario"
@@ -96,34 +99,37 @@
         @endif
     </section>
 
-    {{-- Enviados/Pendientes (si existe la tabla/modelo temporal) --}}
+    {{-- Enviados/Pendientes --}}
     @if($enviados !== null && $enviados->count() >= 0)
-    <section>
-        <h2 style="margin:0 0 .5rem 0;">Enviados / Pendientes ({{ $enviados->count() }})</h2>
+    <section class="wu-section">
+        <h2 class="wu-h2">Enviados / Pendientes ({{ $enviados->count() }})</h2>
 
         @if($enviados->isEmpty())
-            <div class="alert" style="padding:.75rem; background:#f6f6f6; border:1px solid #eee;">
+            <div class="alert alert--empty">
                 No tienes envíos pendientes.
             </div>
         @else
-            <ul style="margin:0; padding-left:18px; display:grid; gap:8px;">
+            <ul class="wu-list">
                 @foreach($enviados as $w)
-                    <li style="display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;">
-                        <span>
-                            <strong>{{ $w->maquina->nombre ?? 'Máquina' }}</strong>
-                            <small style="opacity:.7;">— {{ $w->created_at?->format('Y-m-d') }}</small>
-                        </span>
-                        <a href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
-                            {{ \Illuminate\Support\Str::limit($w->enlace, 90) }}
-                        </a>
+                    <li class="wu-item card">
+                        <div class="wu-row">
+                            <span class="wu-meta">
+                                <strong>{{ $w->maquina->nombre ?? 'Máquina' }}</strong>
+                                <small class="wu-date">— {{ $w->created_at?->format('Y-m-d') }}</small>
+                            </span>
 
-                        <span class="badge" style="margin-left:auto; font-size:.75rem; opacity:.8;">
-                            {{ $w->tipo === 'edicion' ? 'Edición' : 'Nuevo' }} — {{ ucfirst($w->estado ?? 'pendiente') }}
-                        </span>
+                            <a class="wu-link" href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
+                                {{ \Illuminate\Support\Str::limit($w->enlace, 90) }}
+                            </a>
+
+                            <span class="badge-soft" style="margin-left:auto;">
+                                {{ $w->tipo === 'edicion' ? 'Edición' : 'Nuevo' }} — {{ ucfirst($w->estado ?? 'pendiente') }}
+                            </span>
+                        </div>
 
                         @if(!empty($w->comentario))
-                            <div style="width:100%;">
-                                <small style="opacity:.8;">📝 {{ \Illuminate\Support\Str::limit($w->comentario, 200) }}</small>
+                            <div class="wu-comment">
+                                <small>📝 {{ \Illuminate\Support\Str::limit($w->comentario, 200) }}</small>
                             </div>
                         @endif
                     </li>
