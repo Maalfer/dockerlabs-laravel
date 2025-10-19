@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
-// Importa los modelos que ya usas en el proyecto
 use App\Models\Writeup;
 use App\Models\WriteupTemporal;
 use App\Models\EnvioMaquina;
@@ -20,40 +19,50 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // ---- Estadísticas sincronizadas con BD ----
-        // Nota: Usamos coincidencia por nombre/email (columnas presentes en tu esquema)
-        // para atribuir envíos al usuario actual sin requerir user_id.
+        // Writeups pendientes enviados por el usuario
         $writeupsPendUser = WriteupTemporal::query()
             ->where('autor', $user->name)
             ->orWhere('autor_email', $user->email)
             ->count();
 
+        // Writeups aprobados del usuario
         $writeupsAprobUser = Writeup::query()
             ->where('autor', $user->name)
             ->orWhere('autor_email', $user->email)
             ->count();
 
+        // Máquinas enviadas por el usuario (en tabla de envíos)
         $maquinasEnvUser = EnvioMaquina::query()
             ->where('autor', $user->name)
             ->orWhere('autor_email', $user->email)
             ->count();
 
-        // Si no hay trazabilidad directa de "autor" en Maquina, mostramos globales.
-        $maquinasAprobGlobal = Maquina::query()->count();
+        // Máquinas aprobadas DEL USUARIO (ya en tabla maquinas)
+        // Se prioriza user_id si existe; si no, se hace match por nombre/email del autor.
+        $maquinasAprobUser = Maquina::query()
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('autor', $user->name)
+                  ->orWhere('autor_email', $user->email);
+            })
+            ->count();
 
-        // Globales útiles para moderación/resumen
+        // Globales útiles (moderación/resumen)
         $writeupsAprobGlobal = Writeup::query()->count();
         $writeupsPendGlobal  = WriteupTemporal::query()->count();
+        // (Ya no usamos global de máquinas aprobadas para el widget principal)
 
         $stats = [
             'writeups_pendientes_user'      => $writeupsPendUser,
             'writeups_aprobados_user'       => $writeupsAprobUser,
             'maquinas_enviadas_user'        => $maquinasEnvUser,
-            'maquinas_aprobadas_global'     => $maquinasAprobGlobal,
+
+            // Ahora sí: aprobadas del usuario, no globales
+            'maquinas_aprobadas_user'       => $maquinasAprobUser,
+            'maquinas_aprobadas_user_known' => true, // la vista ya mostrará "Tus máquinas aprobadas"
+
             'writeups_aprobados_global'     => $writeupsAprobGlobal,
             'writeups_pendientes_global'    => $writeupsPendGlobal,
-            // bandera para la vista (indicamos que no hay conteo “tuyo” de máquinas aprobadas)
-            'maquinas_aprobadas_user_known' => false,
         ];
 
         return view('profile.edit', compact('user', 'stats'));
@@ -83,8 +92,7 @@ class ProfileController extends Controller
             if (!Hash::check($validated['current_password'] ?? '', $user->password)) {
                 return back()->withErrors(['current_password' => 'La contraseña actual no es correcta.'])->withInput();
             }
-            // Con Laravel 10 el cast "hashed" en User hace el hash automáticamente,
-            // pero usar Hash::make aquí lo deja explícito y seguro.
+            // Hash explícito
             $user->password = Hash::make($validated['new_password']);
         }
 

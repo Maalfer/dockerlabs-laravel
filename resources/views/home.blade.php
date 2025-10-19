@@ -3,241 +3,203 @@
 @section('title', 'Inicio')
 
 @section('content')
-    <div class="machines-grid">
-        @foreach ($maquinas as $maquina)
-            <article class="machine-row">
-                <div class="machine-main">
-                    <span class="machine-name">{{ $maquina->nombre }}</span>
+<div class="machines-grid">
+    @foreach ($maquinas as $maquina)
+        <article class="machine-row">
+            <div class="machine-main">
+                <span class="machine-name">{{ $maquina->nombre }}</span>
+                <span class="badge {{ $maquina->dificultad_clase }}">
+                    {{ $maquina->dificultad_etiqueta }}
+                </span>
 
-                    <span class="badge {{ $maquina->dificultad_clase }}">
-                        {{ $maquina->dificultad_etiqueta }}
-                    </span>
-
-                   
-                    <button
-                        class="btn btn-xs btn-outline open-desc"
-                        type="button"
+                <button class="btn btn-xs btn-outline open-desc" type="button"
                         data-target="desc-{{ $maquina->id ?? $loop->index }}"
-                        aria-haspopup="dialog"
-                        aria-controls="desc-{{ $maquina->id ?? $loop->index }}"
-                    >
-                        Descripción
-                    </button>
+                        aria-haspopup="dialog" aria-controls="desc-{{ $maquina->id ?? $loop->index }}">
+                    Descripción
+                </button>
 
-                    
-                    <button
-                        class="btn btn-xs btn-icon open-upload"
-                        type="button"
-                        title="Subir writeup"
-                        data-target="upload-{{ $maquina->id ?? $loop->index }}"
-                        aria-haspopup="dialog"
-                        aria-controls="upload-{{ $maquina->id ?? $loop->index }}"
-                    >
+                @guest
+                    <button class="btn btn-xs btn-icon open-upload" type="button"
+                            title="Subir writeup"
+                            data-target="login-required-modal"
+                            aria-haspopup="dialog" aria-controls="login-required-modal">
                         <i class="fas fa-upload" aria-hidden="true"></i>
                     </button>
+                @endguest
 
-                   
-                    @if($maquina->enlace_descarga)
-                        <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar">
-                            <i class="fas fa-download" aria-hidden="true"></i>
-                        </a>
-                    @else
-                        <button class="btn btn-xs btn-icon" type="button" title="Descargar" disabled>
-                            <i class="fas fa-download" aria-hidden="true"></i>
-                        </button>
-                    @endif
+                @auth
+                    <button class="btn btn-xs btn-icon open-upload" type="button"
+                            title="Subir writeup"
+                            data-target="upload-{{ $maquina->id ?? $loop->index }}"
+                            aria-haspopup="dialog" aria-controls="upload-{{ $maquina->id ?? $loop->index }}">
+                        <i class="fas fa-upload" aria-hidden="true"></i>
+                    </button>
+                @endauth
 
-                    
-                    <button
-                        class="btn btn-xs btn-icon open-book"
-                        type="button"
+                @if($maquina->enlace_descarga)
+                    <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar">
+                        <i class="fas fa-download" aria-hidden="true"></i>
+                    </a>
+                @else
+                    <button class="btn btn-xs btn-icon" type="button" title="Descargar" disabled>
+                        <i class="fas fa-download" aria-hidden="true"></i>
+                    </button>
+                @endif
+
+                <button class="btn btn-xs btn-icon open-book" type="button"
                         title="Ver writeups aprobados"
                         data-target="book-{{ $maquina->id ?? $loop->index }}"
-                        aria-haspopup="dialog"
-                        aria-controls="book-{{ $maquina->id ?? $loop->index }}"
-                    >
-                        <i class="fas fa-book" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </article>
-
-           
-            <div
-                id="desc-{{ $maquina->id ?? $loop->index }}"
-                class="modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="desc-title-{{ $maquina->id ?? $loop->index }}"
-                aria-hidden="true"
-            >
-                <div class="modal-card" role="document">
-                    <header class="modal-header">
-                        <h3 id="desc-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }}  Descripción
-                        </h3>
-                        <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
-                    </header>
-
-                    <div class="modal-body">
-                        <p>{{ $maquina->descripcion }}</p>
-                    </div>
-
-                    <footer class="modal-footer">
-                        <button class="btn btn-xs modal-close" type="button">Cerrar</button>
-                    </footer>
-                </div>
+                        aria-haspopup="dialog" aria-controls="book-{{ $maquina->id ?? $loop->index }}">
+                    <i class="fas fa-book" aria-hidden="true"></i>
+                </button>
             </div>
+        </article>
 
-          
-            <div
-                id="upload-{{ $maquina->id ?? $loop->index }}"
-                class="modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="upload-title-{{ $maquina->id ?? $loop->index }}"
-                aria-hidden="true"
-            >
-                <div class="modal-card" role="document">
-                    <header class="modal-header">
-                        <h3 id="upload-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }} — Enviar writeup
-                        </h3>
-                        <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
-                    </header>
+        <div id="desc-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
+             aria-modal="true" aria-labelledby="desc-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
+            <div class="modal-card" role="document">
+                <header class="modal-header">
+                    <h3 id="desc-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
+                        {{ $maquina->nombre }} Descripción
+                    </h3>
+                    <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+                </header>
+                <div class="modal-body">
+                    <p>{{ $maquina->descripcion }}</p>
+                </div>
+                <footer class="modal-footer">
+                    <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+                </footer>
+            </div>
+        </div>
 
-                    <form method="POST" action="{{ route('writeups-temporal.store') }}">
-                        @csrf
-                        <input type="hidden" name="maquina_id" value="{{ $maquina->id }}">
-
-                        <div class="modal-body">
-                            <div class="form-row" style="display:grid; gap:10px;">
-                                <label style="display:grid; gap:6px;">
-                                    Autor
-                                    <input
-                                        type="text"
-                                        name="autor"
-                                        class="form-control"
-                                        required
-                                        maxlength="120"
-                                        placeholder="Tu nombre o alias">
-                                </label>
-
-                                <label style="display:grid; gap:6px;">
-                                    Enlace
-                                    <input
-                                        type="url"
-                                        name="enlace"
-                                        class="form-control"
-                                        required
-                                        placeholder="https://...">
-                                </label>
-                            </div>
-
-                            @if ($errors->any())
-                                <div class="alert alert-error" style="margin-top:10px;">
-                                    {{ $errors->first() }}
-                                </div>
-                            @endif
+        @auth
+        <div id="upload-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
+             aria-modal="true" aria-labelledby="upload-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
+            <div class="modal-card" role="document">
+                <header class="modal-header">
+                    <h3 id="upload-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
+                        {{ $maquina->nombre }} — Enviar writeup
+                    </h3>
+                    <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+                </header>
+                <form method="POST" action="{{ route('writeups-temporal.store') }}">
+                    @csrf
+                    <input type="hidden" name="maquina_id" value="{{ $maquina->id }}">
+                    <div class="modal-body">
+                        <div class="form-row" style="display:grid; gap:10px;">
+                            <label style="display:grid; gap:6px;">
+                                Autor
+                                <input type="text" name="autor" class="form-control" required maxlength="120"
+                                       value="{{ auth()->user()->name }}" readonly>
+                            </label>
+                            <input type="hidden" name="autor_email" value="{{ auth()->user()->email }}">
+                            <label style="display:grid; gap:6px;">
+                                Enlace
+                                <input type="url" name="enlace" class="form-control" required placeholder="https://...">
+                            </label>
                         </div>
-
-                        <footer class="modal-footer">
-                            <button class="btn btn-xs modal-close" type="button">Cancelar</button>
-                            <button class="btn btn-xs btn-primary" type="submit">Enviar</button>
-                        </footer>
-                    </form>
-                </div>
-            </div>
-
-            
-            <div
-                id="book-{{ $maquina->id ?? $loop->index }}"
-                class="modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="book-title-{{ $maquina->id ?? $loop->index }}"
-                aria-hidden="true"
-            >
-                <div class="modal-card" role="document">
-                    <header class="modal-header">
-                        <h3 id="book-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
-                            {{ $maquina->nombre }} Writeups aprobados
-                        </h3>
-                        <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
-                    </header>
-
-                    <div class="modal-body">
-                        @if(isset($maquina->writeups) && $maquina->writeups->isNotEmpty())
-                            <ul style="margin:0; padding-left:18px; display:grid; gap:6px;">
-                                @foreach ($maquina->writeups as $w)
-                                    <li>
-                                        {{-- DORADO si el autor existe como usuario registrado --}}
-                                        <strong @if($w->user) style="color:#DAA520; font-weight:700" @endif>
-                                            {{ $w->autor }}:
-                                        </strong>
-                                        <a href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
-                                            {{ \Illuminate\Support\Str::limit($w->enlace, 80) }}
-                                        </a>
-                                        <small style="opacity:.7;"> — {{ $w->created_at->format('Y-m-d') }}</small>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p>No hay writeups aprobados todavía.</p>
+                        @if ($errors->any())
+                            <div class="alert alert-error" style="margin-top:10px;">
+                                {{ $errors->first() }}
+                            </div>
                         @endif
                     </div>
-
                     <footer class="modal-footer">
-                        <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+                        <button class="btn btn-xs modal-close" type="button">Cancelar</button>
+                        <button class="btn btn-xs btn-primary" type="submit">Enviar</button>
                     </footer>
-                </div>
+                </form>
             </div>
-        @endforeach
+        </div>
+        @endauth
+
+        <div id="book-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
+             aria-modal="true" aria-labelledby="book-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
+            <div class="modal-card" role="document">
+                <header class="modal-header">
+                    <h3 id="book-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
+                        {{ $maquina->nombre }} Writeups aprobados
+                    </h3>
+                    <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+                </header>
+                <div class="modal-body">
+                    @if(isset($maquina->writeups) && $maquina->writeups->isNotEmpty())
+                        <ul style="margin:0; padding-left:18px; display:grid; gap:6px;">
+                            @foreach ($maquina->writeups as $w)
+                                <li>
+                                    <strong @if($w->user) style="color:#DAA520; font-weight:700" @endif>
+                                        {{ $w->autor }}:
+                                    </strong>
+                                    <a href="{{ $w->enlace }}" target="_blank" rel="noopener noreferrer">
+                                        {{ \Illuminate\Support\Str::limit($w->enlace, 80) }}
+                                    </a>
+                                    <small style="opacity:.7;"> — {{ $w->created_at->format('Y-m-d') }}</small>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p>No hay writeups aprobados todavía.</p>
+                    @endif
+                </div>
+                <footer class="modal-footer">
+                    <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+                </footer>
+            </div>
+        </div>
+    @endforeach
+</div>
+
+@guest
+<div id="login-required-modal" class="modal" role="dialog"
+     aria-modal="true" aria-labelledby="login-required-title" aria-hidden="true">
+    <div class="modal-card" role="document">
+        <header class="modal-header">
+            <h3 id="login-required-title" class="modal-title">Enviar writeup</h3>
+            <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+        </header>
+        <div class="modal-body">
+            <p>Debes tener una cuenta para enviar writeups.</p>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <a href="{{ route('login') }}" class="btn btn-xs btn-primary">Iniciar sesión</a>
+                <a href="{{ route('register') }}" class="btn btn-xs">Crear cuenta</a>
+            </div>
+        </div>
+        <footer class="modal-footer">
+            <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+        </footer>
     </div>
+</div>
+@endguest
 
-
-    <script>
-      (function () {
-        const open = (el) => { el?.classList.add('open'); el?.setAttribute('aria-hidden', 'false'); };
-        const close = (el) => { el?.classList.remove('open'); el?.setAttribute('aria-hidden', 'true'); };
-
-        document.addEventListener('click', (e) => {
- 
-          if (e.target.closest('.open-desc')) {
-            const btn = e.target.closest('.open-desc');
-            const id = btn.getAttribute('data-target');
-            const modal = document.getElementById(id);
-            open(modal);
-          }
-
-
-          if (e.target.closest('.open-upload')) {
-            const btn = e.target.closest('.open-upload');
-            const id = btn.getAttribute('data-target');
-            const modal = document.getElementById(id);
-            open(modal);
-          }
-
-    
-          if (e.target.closest('.open-book')) {
-            const btn = e.target.closest('.open-book');
-            const id = btn.getAttribute('data-target');
-            const modal = document.getElementById(id);
-            open(modal);
-          }
-
-       
-          if (e.target.matches('.modal-close') || (e.target.matches('.modal') && !e.target.querySelector('.modal-card:hover'))) {
-            const modal = e.target.closest('.modal');
-            close(modal);
-          }
-        });
-
-     
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
+<script>
+(function () {
+    const open = (el) => { el?.classList.add('open'); el?.setAttribute('aria-hidden', 'false'); };
+    const close = (el) => { el?.classList.remove('open'); el?.setAttribute('aria-hidden', 'true'); };
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.open-desc')) {
+            const id = e.target.closest('.open-desc').getAttribute('data-target');
+            open(document.getElementById(id));
+        }
+        if (e.target.closest('.open-upload')) {
+            const id = e.target.closest('.open-upload').getAttribute('data-target');
+            open(document.getElementById(id));
+        }
+        if (e.target.closest('.open-book')) {
+            const id = e.target.closest('.open-book').getAttribute('data-target');
+            open(document.getElementById(id));
+        }
+        if (e.target.matches('.modal-close')) {
+            close(e.target.closest('.modal'));
+        } else if (e.target.classList && e.target.classList.contains('modal')) {
+            close(e.target);
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             document.querySelectorAll('.modal.open').forEach(close);
-          }
-        });
-      })();
-    </script>
+        }
+    });
+})();
+</script>
 @endsection

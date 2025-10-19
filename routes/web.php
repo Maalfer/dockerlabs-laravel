@@ -107,6 +107,7 @@ Route::get('/admin/writeups', [WriteupAdminController::class, 'index'])
         'auth',
         \App\Http\Middleware\RoleMiddleware::class . ':admin,moderator',
     ]);
-// Writeups temporales: envío público
+
 Route::post('/writeups-temporal', [WriteupTemporalController::class, 'store'])
-    ->name('writeups-temporal.store');
+    ->name('writeups-temporal.store')
+    ->middleware('auth'); // << añadir
