@@ -28,7 +28,17 @@
                        style="display:block; padding:0.6rem 0.8rem; color:#fff; text-decoration:none;">
                         Ver / Editar perfil
                     </a>
+
+                    {{-- Solo visible para administradores --}}
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('profile.roles.index') }}"
+                           style="display:block; padding:0.6rem 0.8rem; color:#fff; text-decoration:none;">
+                            Gestión de roles
+                        </a>
+                    @endif
+
                     <div style="height:1px; background:rgba(255,255,255,.1);"></div>
+
                     <form action="{{ route('logout') }}" method="POST" style="margin:0;">
                         @csrf
                         <button type="submit"
