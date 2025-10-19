@@ -1,55 +1,38 @@
-<header style="background:#1e293b; color:white; padding:1rem; text-align:center;">
+<header class="site-header">
     <h1>DockerLabs</h1>
-    <nav>
-        <a href="/" style="margin:0 10px; color:white;">Inicio</a>
-        <a href="{{ route('enviar-maquina.form') }}" style="margin:0 10px; color:white;">
-            Enviar máquina
-        </a>
-        <a href="/" style="margin:0 10px; color:white;">El Búnker</a>
-        <a href="/" style="margin:0 10px; color:white;">Opciones</a>
-        <a href="{{ route('mis-writeups.index') }}" style="margin:0 10px; color:white;">Mis Writeups</a>
+    <nav class="site-nav">
+        <a href="/">Inicio</a>
+        <a href="{{ route('enviar-maquina.form') }}">Enviar máquina</a>
+        <a href="/">El Búnker</a>
+        <a href="/">Opciones</a>
+        <a href="{{ route('mis-writeups.index') }}">Mis Writeups</a>
 
         @guest
-            <a href="{{ route('login') }}" style="margin:0 10px; color:white;">Login</a>
-            <a href="{{ route('register') }}" style="margin:0 10px; color:white;">Registro</a>
+            <a href="{{ route('login') }}">Login</a>
+            <a href="{{ route('register') }}">Registro</a>
         @endguest
 
         @auth
-
-            {{-- Dropdown Perfil --}}
-            <div id="perfil-dd" style="display:inline-block; position:relative; margin:0 10px;">
-                <button id="perfil-btn"
-                        style="background:none; border:1px solid rgba(255,255,255,.3); color:white; padding:0.35rem 0.6rem; cursor:pointer; border-radius:6px;">
+            <div class="perfil-dd">
+                <button id="perfil-btn" class="perfil-btn">
                     Perfil <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </button>
-                <div id="perfil-menu"
-                     style="display:none; position:absolute; right:0; top:115%; background:#0f172a; border:1px solid rgba(255,255,255,.15); min-width:220px; border-radius:8px; overflow:hidden; z-index:50;">
-                    <a href="{{ route('profile.edit') }}"
-                       style="display:block; padding:0.6rem 0.8rem; color:#fff; text-decoration:none;">
-                        Ver / Editar perfil
-                    </a>
+                <div id="perfil-menu" class="perfil-menu">
+                    <a href="{{ route('profile.edit') }}">Ver / Editar perfil</a>
 
-                    {{-- Solo visible para administradores --}}
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('profile.roles.index') }}"
-                           style="display:block; padding:0.6rem 0.8rem; color:#fff; text-decoration:none;">
-                            Gestión de roles
-                        </a>
+                        <a href="{{ route('profile.roles.index') }}">Gestión de roles</a>
                     @endif
 
-                    <div style="height:1px; background:rgba(255,255,255,.1);"></div>
+                    <div class="perfil-divider"></div>
 
-                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                    <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit"
-                                style="display:block; width:100%; text-align:left; padding:0.6rem 0.8rem; background:none; border:none; color:#fff; cursor:pointer;">
-                            Cerrar sesión
-                        </button>
+                        <button type="submit" class="perfil-logout">Cerrar sesión</button>
                     </form>
                 </div>
             </div>
 
-            {{-- Script para abrir/cerrar el menú --}}
             <script>
                 (function () {
                     const btn = document.getElementById('perfil-btn');
