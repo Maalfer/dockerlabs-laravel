@@ -14,8 +14,9 @@
     <table class="table">
       <thead>
         <tr>
-          <th>M�quina</th>
+          <th>Máquina</th>
           <th>Autor</th>
+          <th>Email</th>
           <th>Enlace</th>
           <th>Fecha</th>
           <th style="width:160px;">Acciones</th>
@@ -24,8 +25,9 @@
       <tbody>
         @forelse ($items as $item)
           <tr>
-            <td>{{ $item->maquina?->nombre ?? '\u2014' }}</td>
+            <td>{{ $item->maquina?->nombre ?? '—' }}</td>
             <td>{{ $item->autor }}</td>
+            <td>{{ $item->autor_email ?? '—' }}</td>
             <td>
               <a href="{{ $item->enlace }}" target="_blank" rel="noopener noreferrer">
                 {{ \Illuminate\Support\Str::limit($item->enlace, 60) }}
@@ -38,7 +40,7 @@
                 <button class="btn btn-xs btn-primary" type="submit">Aprobar</button>
               </form>
 
-              <form method="POST" action="{{ route('admin.writeups-temporal.destroy', $item->id) }}" style="display:inline-block;" onsubmit="return confirm('�Eliminar este env�o?');">
+              <form method="POST" action="{{ route('admin.writeups-temporal.destroy', $item->id) }}" style="display:inline-block;" onsubmit="return confirm('¿Eliminar este envío?');">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-xs btn-danger" type="submit">Eliminar</button>
@@ -46,7 +48,7 @@
             </td>
           </tr>
         @empty
-          <tr><td colspan="5">Sin writeups enviados todav�a.</td></tr>
+          <tr><td colspan="6">Sin writeups enviados todavía.</td></tr>
         @endforelse
       </tbody>
     </table>

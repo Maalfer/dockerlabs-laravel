@@ -18,23 +18,12 @@
                     Descripción
                 </button>
 
-                @guest
-                    <button class="btn btn-xs btn-icon open-upload" type="button"
-                            title="Subir writeup"
-                            data-target="login-required-modal"
-                            aria-haspopup="dialog" aria-controls="login-required-modal">
-                        <i class="fas fa-upload" aria-hidden="true"></i>
-                    </button>
-                @endguest
-
-                @auth
-                    <button class="btn btn-xs btn-icon open-upload" type="button"
-                            title="Subir writeup"
-                            data-target="upload-{{ $maquina->id ?? $loop->index }}"
-                            aria-haspopup="dialog" aria-controls="upload-{{ $maquina->id ?? $loop->index }}">
-                        <i class="fas fa-upload" aria-hidden="true"></i>
-                    </button>
-                @endauth
+                <button class="btn btn-xs btn-icon open-upload" type="button"
+                        title="Subir writeup"
+                        data-target="upload-{{ $maquina->id ?? $loop->index }}"
+                        aria-haspopup="dialog" aria-controls="upload-{{ $maquina->id ?? $loop->index }}">
+                    <i class="fas fa-upload" aria-hidden="true"></i>
+                </button>
 
                 @if($maquina->enlace_descarga)
                     <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar">
@@ -73,7 +62,6 @@
             </div>
         </div>
 
-        @auth
         <div id="upload-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
              aria-modal="true" aria-labelledby="upload-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
             <div class="modal-card" role="document">
@@ -86,19 +74,41 @@
                 <form method="POST" action="{{ route('writeups-temporal.store') }}">
                     @csrf
                     <input type="hidden" name="maquina_id" value="{{ $maquina->id }}">
+                    <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
+                        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                    </div>
                     <div class="modal-body">
+                        <div class="alert" style="margin-bottom:10px; padding:.75rem; border:1px solid #ffd6a0; background:#fff3cd; color:#7a4d00;">
+                            <strong>Recomendación:</strong> crea una cuenta e inicia sesión para poder gestionar tus writeups.
+                            <a href="{{ route('register') }}" class="link">Registrarme</a> ·
+                            <a href="{{ route('login') }}" class="link">Iniciar sesión</a>
+                        </div>
+
                         <div class="form-row" style="display:grid; gap:10px;">
-                            <label style="display:grid; gap:6px;">
-                                Autor
-                                <input type="text" name="autor" class="form-control" required maxlength="120"
-                                       value="{{ auth()->user()->name }}" readonly>
-                            </label>
-                            <input type="hidden" name="autor_email" value="{{ auth()->user()->email }}">
+                            @auth
+                                <label style="display:grid; gap:6px;">
+                                    Autor
+                                    <input type="text" name="autor" class="form-control" required maxlength="120"
+                                           value="{{ auth()->user()->name }}" readonly>
+                                </label>
+                          
+                            @else
+                                <label style="display:grid; gap:6px;">
+                                    Autor
+                                    <input type="text" name="autor" class="form-control" required maxlength="120" placeholder="Tu nombre o alias">
+                                </label>
+                                <label style="display:grid; gap:6px;">
+                                    Email
+                                    <input type="email" name="autor_email" class="form-control" required maxlength="255" placeholder="tu@email.com">
+                                </label>
+                            @endauth
+
                             <label style="display:grid; gap:6px;">
                                 Enlace
                                 <input type="url" name="enlace" class="form-control" required placeholder="https://...">
                             </label>
                         </div>
+
                         @if ($errors->any())
                             <div class="alert alert-error" style="margin-top:10px;">
                                 {{ $errors->first() }}
@@ -112,7 +122,6 @@
                 </form>
             </div>
         </div>
-        @endauth
 
         <div id="book-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
              aria-modal="true" aria-labelledby="book-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
@@ -149,28 +158,6 @@
         </div>
     @endforeach
 </div>
-
-@guest
-<div id="login-required-modal" class="modal" role="dialog"
-     aria-modal="true" aria-labelledby="login-required-title" aria-hidden="true">
-    <div class="modal-card" role="document">
-        <header class="modal-header">
-            <h3 id="login-required-title" class="modal-title">Enviar writeup</h3>
-            <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
-        </header>
-        <div class="modal-body">
-            <p>Debes tener una cuenta para enviar writeups.</p>
-            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-                <a href="{{ route('login') }}" class="btn btn-xs btn-primary">Iniciar sesión</a>
-                <a href="{{ route('register') }}" class="btn btn-xs">Crear cuenta</a>
-            </div>
-        </div>
-        <footer class="modal-footer">
-            <button class="btn btn-xs modal-close" type="button">Cerrar</button>
-        </footer>
-    </div>
-</div>
-@endguest
 
 <script>
 (function () {

@@ -10,13 +10,14 @@ class WriteupTemporal extends Model
     protected $table = 'writeups_temporal';
 
     protected $fillable = [
-        'maquina_id',
-        'autor',
-        'enlace',
-        'estado',
-        'writeup_id',   // <- nuevo
-        'tipo',         // <- nuevo: 'nuevo' | 'edicion'
-        'comentario',   // <- nuevo
+       'maquina_id',
+       'autor',
+       'autor_email',  
+       'enlace',
+       'estado',
+       'user_id',      
+       'tipo',
+       'comentario',
     ];
 
     public function maquina(): BelongsTo
