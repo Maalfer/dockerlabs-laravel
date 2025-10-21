@@ -4,27 +4,150 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Maquina;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // mismos niveles que usaste en el scope/Blade
         $niveles = ['muy-facil', 'facil', 'medio', 'dificil'];
+        $filtro  = $request->query('dificultad');
 
-        // lee ?dificultad=...
-        $filtro = $request->query('dificultad');
-
-        // usa el scope difficulty() que añadimos al modelo
+        // === LISTADO (filtro + paginado) ===
         $maquinas = Maquina::query()
             ->difficulty($filtro)
             ->latest()
             ->paginate(12)
             ->appends($request->query());
 
+        // -------- RANKING JUGADORES (writeups ponderados por dificultad) --------
+        $wj = DB::table('writeups as w')
+            ->join('maquinas as m', 'm.id', '=', 'w.maquina_id');
+
+        $writeupsHasUserId = Schema::hasColumn('writeups', 'user_id');
+        $writeupsHasAutor  = Schema::hasColumn('writeups', 'autor');
+
+        $hasUsersTable = Schema::hasTable('users');
+        $usersHasId    = $hasUsersTable && Schema::hasColumn('users', 'id');
+        $usersHasName  = $hasUsersTable && Schema::hasColumn('users', 'name');
+
+        $usersJoined = false;
+        if ($writeupsHasUserId && $usersHasId && $usersHasName) {
+            $wj->leftJoin('users as u', 'u.id', '=', 'w.user_id');
+            $usersJoined = true;
+        }
+
+        if ($usersJoined && $writeupsHasAutor) {
+            $wj->selectRaw("
+                COALESCE(u.name, w.autor) as nombre,
+                SUM(CASE LOWER(REPLACE(m.dificultad, ' ', '-'))
+                    WHEN 'dificil' THEN 4
+                    WHEN 'medio'   THEN 3
+                    WHEN 'facil'   THEN 2
+                    WHEN 'muy-facil' THEN 1
+                    ELSE 0 END
+                ) as puntos,
+                COUNT(*) as total_writeups
+            ");
+        } elseif ($usersJoined) {
+            $wj->selectRaw("
+                u.name as nombre,
+                SUM(CASE LOWER(REPLACE(m.dificultad, ' ', '-'))
+                    WHEN 'dificil' THEN 4
+                    WHEN 'medio'   THEN 3
+                    WHEN 'facil'   THEN 2
+                    WHEN 'muy-facil' THEN 1
+                    ELSE 0 END
+                ) as puntos,
+                COUNT(*) as total_writeups
+            ");
+        } elseif ($writeupsHasAutor) {
+            $wj->selectRaw("
+                w.autor as nombre,
+                SUM(CASE LOWER(REPLACE(m.dificultad, ' ', '-'))
+                    WHEN 'dificil' THEN 4
+                    WHEN 'medio'   THEN 3
+                    WHEN 'facil'   THEN 2
+                    WHEN 'muy-facil' THEN 1
+                    ELSE 0 END
+                ) as puntos,
+                COUNT(*) as total_writeups
+            ");
+        } else {
+            // Fallback absoluto
+            $wj->selectRaw("
+                'Desconocido' as nombre,
+                SUM(CASE LOWER(REPLACE(m.dificultad, ' ', '-'))
+                    WHEN 'dificil' THEN 4
+                    WHEN 'medio'   THEN 3
+                    WHEN 'facil'   THEN 2
+                    WHEN 'muy-facil' THEN 1
+                    ELSE 0 END
+                ) as puntos,
+                COUNT(*) as total_writeups
+            ");
+        }
+
+        $rankingJugadores = $wj
+            ->groupBy('nombre')
+            ->orderByDesc('puntos')
+            ->orderBy('nombre')
+            ->limit(100)
+            ->get();
+
+        // -------- RANKING CREADORES (nº de máquinas por creador) --------
+        $mc = DB::table('maquinas as m');
+
+        $maquinasHasUserId = Schema::hasColumn('maquinas', 'user_id');
+        $maquinasHasAutor  = Schema::hasColumn('maquinas', 'autor');
+
+        $hasUsersTable   = Schema::hasTable('users');
+        $usersHasId      = $hasUsersTable && Schema::hasColumn('users', 'id');
+        $usersHasName    = $hasUsersTable && Schema::hasColumn('users', 'name');
+        $usersHasUsername= $hasUsersTable && Schema::hasColumn('users', 'username');
+        $usersHasEmail   = $hasUsersTable && Schema::hasColumn('users', 'email');
+
+        $usersJoined2 = false;
+        if ($maquinasHasUserId && $usersHasId && ($usersHasName || $usersHasUsername || $usersHasEmail)) {
+            $mc->leftJoin('users as u', 'u.id', '=', 'm.user_id');
+            $usersJoined2 = true;
+        }
+
+        // Construimos expresión de nombre robusta (evita vacíos con NULLIF)
+        $nombreExprParts = [];
+        if ($usersJoined2) {
+            if ($usersHasName)     $nombreExprParts[] = "NULLIF(u.name, '')";
+            if ($usersHasUsername) $nombreExprParts[] = "NULLIF(u.username, '')";
+            if ($usersHasEmail)    $nombreExprParts[] = "NULLIF(u.email, '')";
+        }
+        if ($maquinasHasAutor)       $nombreExprParts[] = "NULLIF(m.autor, '')";
+        $nombreExprParts[] = "'Desconocido'";
+        $nombreExpr = 'COALESCE(' . implode(', ', $nombreExprParts) . ')';
+
+        // Clave de agrupación estable
+        if ($maquinasHasUserId) {
+            $mc->selectRaw("$nombreExpr as nombre, COUNT(*) as total_maquinas, m.user_id as creador_key")
+               ->groupBy('creador_key');
+        } elseif ($maquinasHasAutor) {
+            $mc->selectRaw("$nombreExpr as nombre, COUNT(*) as total_maquinas, TRIM(m.autor) as creador_key")
+               ->groupBy('creador_key');
+        } else {
+            $mc->selectRaw("'Desconocido' as nombre, COUNT(*) as total_maquinas")
+               ->groupBy(DB::raw(1));
+        }
+
+        $rankingCreadores = $mc
+            ->orderByDesc('total_maquinas')
+            ->orderBy('nombre')
+            ->limit(100)
+            ->get();
+
         return view('home', [
-            'maquinas' => $maquinas,
-            'filtroDificultad' => in_array($filtro, $niveles) ? $filtro : null,
+            'maquinas'          => $maquinas,
+            'filtroDificultad'  => in_array($filtro, $niveles) ? $filtro : null,
+            'rankingJugadores'  => $rankingJugadores,
+            'rankingCreadores'  => $rankingCreadores,
         ]);
     }
 }

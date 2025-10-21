@@ -4,33 +4,44 @@
 
 @section('content')
 <style>
-  /* ===== Filtros por dificultad (no rompe estilos existentes) ===== */
-  .filters-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .6rem;
-  align-items: center;
-  justify-content: flex-end; /* 👈 Alinea todo a la derecha */
-  padding: .5rem 0 1rem;
-}
-
-  .chip {
-  --ring: transparent;
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  padding: .65rem 1rem;             /* 🔹 más relleno */
-  border-radius: 999px;
-  background: var(--surface, #12161c);
-  color: var(--text, #e6e8ef);
-  border: 1px solid var(--border, #222834);
-  font-size: 1rem;                  /* 🔹 fuente un poco más grande */
-  line-height: 1.2;
-  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
-  text-decoration: none;
-  will-change: transform;
+  /* ===== Barra superior (Rankings a la izquierda / Filtros a la derecha) ===== */
+  .top-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; padding:.5rem 0 1rem; flex-wrap:wrap;
   }
+  .rank-actions{
+    display:flex; gap:.6rem; align-items:center; flex-wrap:wrap;
+  }
+  .btn-rank{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.65rem 1rem; border-radius:10px;
+    background: var(--surface, #12161c);
+    color: var(--text, #e6e8ef);
+    border:1px solid var(--border, #222834);
+    font-size:.95rem; line-height:1.2; text-decoration:none;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    cursor:pointer;
+  }
+  .btn-rank:hover{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.25); }
 
+  /* ===== Filtros por dificultad ===== */
+  .filters-bar {
+    display: flex; flex-wrap: wrap; gap: .6rem;
+    align-items: center; justify-content: flex-end;
+    padding: .5rem 0 1rem;
+    min-width: 320px;
+  }
+  .chip {
+    --ring: transparent;
+    display: inline-flex; align-items: center; gap: .6rem;
+    padding: .65rem 1rem; border-radius: 999px;
+    background: var(--surface, #12161c);
+    color: var(--text, #e6e8ef);
+    border: 1px solid var(--border, #222834);
+    font-size: 1rem; line-height: 1.2;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+    text-decoration: none; will-change: transform;
+  }
   .chip:hover{
     transform: translateY(-1px);
     box-shadow: 0 4px 16px rgba(0,0,0,.25);
@@ -46,40 +57,119 @@
   .chip-amber{ --ring:#d97706; color:#f59e0b; background: color-mix(in oklab, #d97706 12%, transparent); }
   .chip-red{   --ring:#dc2626; color:#f87171; background: color-mix(in oklab, #dc2626 12%, transparent); }
   .no-results{ margin:.5rem 0 1rem; opacity:.8; }
+
+  /* ===== Tabla modales ranking ===== */
+  .table{ width:100%; border-collapse:separate; border-spacing:0 8px; }
+  .table thead th{ text-align:left; font-weight:600; opacity:.9; padding:.6rem .8rem; }
+  .table tbody tr{
+    background: var(--surface, #12161c); border:1px solid var(--border, #222834);
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
+  }
+  .table tbody td{ padding:.6rem .8rem; vertical-align:middle; }
+  .rank-medal{ font-weight:700; }
 </style>
 
-{{-- ===== Barra de filtros por dificultad ===== --}}
 @php $f = $filtroDificultad ?? null; @endphp
-<div class="filters-bar">
-  <a href="{{ route('home') }}"
-     class="chip {{ empty($f) ? 'active' : '' }}">
-     Todas
-  </a>
 
-  <a href="{{ route('home', ['dificultad' => 'muy-facil']) }}"
-     class="chip chip-cyan {{ $f === 'muy-facil' ? 'active' : '' }}">
-     Muy Fácil
-  </a>
+{{-- ===== TOP BAR: Izquierda rankings / Derecha filtros ===== --}}
+<div class="top-bar">
+  <div class="rank-actions">
+    <button class="btn-rank open-ranking-jugadores" type="button" data-target="ranking-jugadores">
+      🏆 Ranking Jugadores
+    </button>
+    <button class="btn-rank open-ranking-creadores" type="button" data-target="ranking-creadores">
+      🧩 Ranking Creadores
+    </button>
+  </div>
 
-  <a href="{{ route('home', ['dificultad' => 'facil']) }}"
-     class="chip chip-green {{ $f === 'facil' ? 'active' : '' }}">
-     Fácil
-  </a>
-
-  <a href="{{ route('home', ['dificultad' => 'medio']) }}"
-     class="chip chip-amber {{ $f === 'medio' ? 'active' : '' }}">
-     Medio
-  </a>
-
-  <a href="{{ route('home', ['dificultad' => 'dificil']) }}"
-     class="chip chip-red {{ $f === 'dificil' ? 'active' : '' }}">
-     Difícil
-  </a>
+  <div class="filters-bar">
+    <a href="{{ route('home') }}" class="chip {{ empty($f) ? 'active' : '' }}">Todas</a>
+    <a href="{{ route('home', ['dificultad' => 'muy-facil']) }}" class="chip chip-cyan {{ $f === 'muy-facil' ? 'active' : '' }}">Muy Fácil</a>
+    <a href="{{ route('home', ['dificultad' => 'facil']) }}" class="chip chip-green {{ $f === 'facil' ? 'active' : '' }}">Fácil</a>
+    <a href="{{ route('home', ['dificultad' => 'medio']) }}" class="chip chip-amber {{ $f === 'medio' ? 'active' : '' }}">Medio</a>
+    <a href="{{ route('home', ['dificultad' => 'dificil']) }}" class="chip chip-red {{ $f === 'dificil' ? 'active' : '' }}">Difícil</a>
+  </div>
 </div>
 
 @if($maquinas->isEmpty())
   <p class="no-results">No hay máquinas para el filtro seleccionado.</p>
 @endif
+
+{{-- ===== MODAL: Ranking Jugadores ===== --}}
+<div id="ranking-jugadores" class="modal" role="dialog" aria-modal="true" aria-labelledby="ranking-jugadores-title" aria-hidden="true">
+  <div class="modal-card" role="document">
+    <header class="modal-header">
+      <h3 id="ranking-jugadores-title" class="modal-title">🏆 Ranking de Jugadores</h3>
+      <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+    </header>
+    <div class="modal-body">
+      @if(($rankingJugadores ?? collect())->isNotEmpty())
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jugador</th>
+              <th>Puntos</th>
+              <th>Writeups aprobados</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($rankingJugadores as $i => $row)
+              <tr>
+                <td class="rank-medal">{{ $i+1 }}</td>
+                <td>{{ $row->nombre }}</td>
+                <td>{{ $row->puntos }}</td>
+                <td>{{ $row->total_writeups }}</td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      @else
+        <p>No hay datos suficientes para generar el ranking.</p>
+      @endif
+    </div>
+    <footer class="modal-footer">
+      <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+    </footer>
+  </div>
+</div>
+
+{{-- ===== MODAL: Ranking Creadores ===== --}}
+<div id="ranking-creadores" class="modal" role="dialog" aria-modal="true" aria-labelledby="ranking-creadores-title" aria-hidden="true">
+  <div class="modal-card" role="document">
+    <header class="modal-header">
+      <h3 id="ranking-creadores-title" class="modal-title">🧩 Ranking de Creadores</h3>
+      <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+    </header>
+    <div class="modal-body">
+      @if(($rankingCreadores ?? collect())->isNotEmpty())
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Creador</th>
+              <th>Máquinas aprobadas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($rankingCreadores as $i => $row)
+              <tr>
+                <td class="rank-medal">{{ $i+1 }}</td>
+                <td>{{ $row->nombre }}</td>
+                <td>{{ $row->total_maquinas }}</td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      @else
+        <p>No hay datos suficientes para generar el ranking.</p>
+      @endif
+    </div>
+    <footer class="modal-footer">
+      <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+    </footer>
+  </div>
+</div>
 
 <div class="machines-grid">
     @foreach ($maquinas as $maquina)
@@ -240,6 +330,7 @@
 (function () {
     const open = (el) => { el?.classList.add('open'); el?.setAttribute('aria-hidden', 'false'); };
     const close = (el) => { el?.classList.remove('open'); el?.setAttribute('aria-hidden', 'true'); };
+
     document.addEventListener('click', (e) => {
         if (e.target.closest('.open-desc')) {
             const id = e.target.closest('.open-desc').getAttribute('data-target');
@@ -253,12 +344,21 @@
             const id = e.target.closest('.open-book').getAttribute('data-target');
             open(document.getElementById(id));
         }
+        if (e.target.closest('.open-ranking-jugadores')) {
+            const id = e.target.closest('.open-ranking-jugadores').getAttribute('data-target');
+            open(document.getElementById(id));
+        }
+        if (e.target.closest('.open-ranking-creadores')) {
+            const id = e.target.closest('.open-ranking-creadores').getAttribute('data-target');
+            open(document.getElementById(id));
+        }
         if (e.target.matches('.modal-close')) {
             close(e.target.closest('.modal'));
         } else if (e.target.classList && e.target.classList.contains('modal')) {
             close(e.target);
         }
     });
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal.open').forEach(close);
