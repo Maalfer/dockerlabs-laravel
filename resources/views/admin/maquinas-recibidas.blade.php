@@ -19,6 +19,7 @@
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Fecha creación</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Writeup</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Enviado</th>
+                    <th style="border-bottom:1px solid #ddd; padding:8px;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,7 +31,7 @@
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
                             {{ $m->autor_nombre }}<br>
                             @if($m->autor_enlace)
-                                <a href="{{ $m->autor_enlace }}" target="_blank">Perfil</a>
+                                <a href="{{ $m->autor_enlace }}" target="_blank" rel="noopener">Perfil</a>
                             @endif
                         </td>
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
@@ -38,13 +39,19 @@
                         </td>
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
                             @if($m->writeup)
-                                <a href="{{ $m->writeup }}" target="_blank">Ver writeup</a>
+                                <a href="{{ $m->writeup }}" target="_blank" rel="noopener">Ver writeup</a>
                             @else
                                 -
                             @endif
                         </td>
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
                             {{ $m->created_at->diffForHumans() }}
+                        </td>
+                        <td style="border-bottom:1px solid #ddd; padding:8px;">
+                            <form method="POST" action="{{ route('admin.maquinas.recibidas.prefill', $m->id) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">Aprobar Máquina</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach

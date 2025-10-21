@@ -8,10 +8,10 @@
 @endpush
 
 @section('content')
+    @php($prefill = session('prefill_maquina'))
     <div class="admin-page">
         <div class="container">
 
-            {{-- Mensajes flash --}}
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
@@ -25,34 +25,47 @@
                 </div>
             @endif
 
+            @if($prefill)
+                <div class="alert alert-info" style="margin-bottom:1rem;">
+                    Estás creando una máquina desde el envío #{{ $prefill['envio_id'] }} de <strong>{{ $prefill['autor'] }}</strong>. Revisa los datos pre-cargados y pulsa “Agregar Máquina”.
+                </div>
+            @endif
+
             <h2>Agregar Nueva Máquina</h2>
 
             <form action="{{ route('admin.maquinas.store') }}" method="POST" class="form">
                 @csrf
 
+                @if($prefill)
+                    <input type="hidden" name="envio_id" value="{{ $prefill['envio_id'] }}">
+                    <input type="hidden" name="autor" value="{{ $prefill['autor'] }}">
+                    <input type="hidden" name="autor_email" value="{{ $prefill['autor_email'] }}">
+                @endif
+
                 <div class="form-row">
                     <label for="nombre">Nombre de la Máquina</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ old('nombre') }}">
+                    <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ old('nombre', $prefill['nombre'] ?? '') }}">
                 </div>
 
                 <div class="form-row">
                     <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3" required>{{ old('descripcion') }}</textarea>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3" required>{{ old('descripcion', $prefill['descripcion'] ?? '') }}</textarea>
                 </div>
 
                 <div class="form-row">
                     <label for="dificultad">Dificultad</label>
+                    @php($difOld = old('dificultad', $prefill['dificultad'] ?? 'medio'))
                     <select id="dificultad" name="dificultad" class="form-control" required>
-                        <option value="facil" {{ old('dificultad')==='facil' ? 'selected' : '' }}>Fácil</option>
-                        <option value="medio" {{ old('dificultad')==='medio' ? 'selected' : '' }}>Medio</option>
-                        <option value="dificil" {{ old('dificultad')==='dificil' ? 'selected' : '' }}>Difícil</option>
-                        <option value="muy-facil" {{ old('dificultad')==='muy-facil' ? 'selected' : '' }}>Muy Fácil</option>
+                        <option value="facil" {{ $difOld==='facil' ? 'selected' : '' }}>Fácil</option>
+                        <option value="medio" {{ $difOld==='medio' ? 'selected' : '' }}>Medio</option>
+                        <option value="dificil" {{ $difOld==='dificil' ? 'selected' : '' }}>Difícil</option>
+                        <option value="muy-facil" {{ $difOld==='muy-facil' ? 'selected' : '' }}>Muy Fácil</option>
                     </select>
                 </div>
 
                 <div class="form-row">
                     <label for="enlace_descarga">Enlace de Descarga (Opcional)</label>
-                    <input type="url" id="enlace_descarga" name="enlace_descarga" class="form-control" value="{{ old('enlace_descarga') }}">
+                    <input type="url" id="enlace_descarga" name="enlace_descarga" class="form-control" value="{{ old('enlace_descarga', $prefill['enlace_descarga'] ?? '') }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Agregar Máquina</button>
@@ -86,10 +99,8 @@
                                     </td>
                                     <td>{{ $maquina->descripcion }}</td>
                                     <td>
-                                        {{-- Mostrar enlace de descarga si está disponible --}}
                                         @if($maquina->enlace_descarga)
-                                            {{-- Aseguramos que el enlace de descarga es accesible --}}
-                                            <a href="{{ filter_var($maquina->enlace_descarga, FILTER_VALIDATE_URL) ? $maquina->enlace_descarga : '#' }}" class="btn btn-success" target="_blank">
+                                            <a href="{{ filter_var($maquina->enlace_descarga, FILTER_VALIDATE_URL) ? $maquina->enlace_descarga : '#' }}" class="btn btn-success" target="_blank" rel="noopener">
                                                 Descargar
                                             </a>
                                         @endif
