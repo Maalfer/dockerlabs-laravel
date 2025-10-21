@@ -38,13 +38,12 @@
 
                 @if($prefill)
                     <input type="hidden" name="envio_id" value="{{ $prefill['envio_id'] }}">
-                    <input type="hidden" name="autor" value="{{ $prefill['autor'] }}">
-                    <input type="hidden" name="autor_email" value="{{ $prefill['autor_email'] }}">
                 @endif
 
                 <div class="form-row">
                     <label for="nombre">Nombre de la Máquina</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ old('nombre', $prefill['nombre'] ?? '') }}">
+                    <input type="text" id="nombre" name="nombre" class="form-control" required
+                           value="{{ old('nombre', $prefill['nombre'] ?? '') }}">
                 </div>
 
                 <div class="form-row">
@@ -65,7 +64,32 @@
 
                 <div class="form-row">
                     <label for="enlace_descarga">Enlace de Descarga (Opcional)</label>
-                    <input type="url" id="enlace_descarga" name="enlace_descarga" class="form-control" value="{{ old('enlace_descarga', $prefill['enlace_descarga'] ?? '') }}">
+                    <input type="url" id="enlace_descarga" name="enlace_descarga" class="form-control"
+                           value="{{ old('enlace_descarga', $prefill['enlace_descarga'] ?? '') }}">
+                </div>
+
+                <div class="form-row">
+                    <label for="autor">Autor</label>
+                    <input type="text" id="autor" name="autor" class="form-control"
+                           value="{{ old('autor', $prefill['autor'] ?? '') }}">
+                </div>
+
+                <div class="form-row">
+                    <label for="autor_url">Autor URL</label>
+                    <input type="url" id="autor_url" name="autor_url" class="form-control"
+                           value="{{ old('autor_url', $prefill['autor_url'] ?? '') }}">
+                </div>
+
+                <div class="form-row">
+                    <label for="fecha_creacion">Fecha de Creación</label>
+                    <input type="date" id="fecha_creacion" name="fecha_creacion" class="form-control"
+                           value="{{ old('fecha_creacion', $prefill['fecha_creacion'] ?? '') }}">
+                </div>
+
+                <div class="form-row">
+                    <label for="writeup">Writeup</label>
+                    <input type="url" id="writeup" name="writeup" class="form-control"
+                           value="{{ old('writeup', $prefill['writeup'] ?? '') }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Agregar Máquina</button>
@@ -100,7 +124,8 @@
                                     <td>{{ $maquina->descripcion }}</td>
                                     <td>
                                         @if($maquina->enlace_descarga)
-                                            <a href="{{ filter_var($maquina->enlace_descarga, FILTER_VALIDATE_URL) ? $maquina->enlace_descarga : '#' }}" class="btn btn-success" target="_blank" rel="noopener">
+                                            <a href="{{ filter_var($maquina->enlace_descarga, FILTER_VALIDATE_URL) ? $maquina->enlace_descarga : '#' }}"
+                                               class="btn btn-success" target="_blank" rel="noopener">
                                                 Descargar
                                             </a>
                                         @endif
