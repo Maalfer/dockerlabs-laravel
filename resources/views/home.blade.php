@@ -3,6 +3,84 @@
 @section('title', 'Inicio')
 
 @section('content')
+<style>
+  /* ===== Filtros por dificultad (no rompe estilos existentes) ===== */
+  .filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  justify-content: flex-end; /* 👈 Alinea todo a la derecha */
+  padding: .5rem 0 1rem;
+}
+
+  .chip {
+  --ring: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .65rem 1rem;             /* 🔹 más relleno */
+  border-radius: 999px;
+  background: var(--surface, #12161c);
+  color: var(--text, #e6e8ef);
+  border: 1px solid var(--border, #222834);
+  font-size: 1rem;                  /* 🔹 fuente un poco más grande */
+  line-height: 1.2;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  text-decoration: none;
+  will-change: transform;
+  }
+
+  .chip:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    border-color: rgba(255,255,255,.12);
+  }
+  .chip.active{
+    outline: 2px solid var(--ring);
+    outline-offset:2px;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 20%, transparent);
+  }
+  .chip-cyan{  --ring:#0891b2; color:#0aaecf; background: color-mix(in oklab, #0891b2 12%, transparent); }
+  .chip-green{ --ring:#16a34a; color:#22c55e; background: color-mix(in oklab, #16a34a 12%, transparent); }
+  .chip-amber{ --ring:#d97706; color:#f59e0b; background: color-mix(in oklab, #d97706 12%, transparent); }
+  .chip-red{   --ring:#dc2626; color:#f87171; background: color-mix(in oklab, #dc2626 12%, transparent); }
+  .no-results{ margin:.5rem 0 1rem; opacity:.8; }
+</style>
+
+{{-- ===== Barra de filtros por dificultad ===== --}}
+@php $f = $filtroDificultad ?? null; @endphp
+<div class="filters-bar">
+  <a href="{{ route('home') }}"
+     class="chip {{ empty($f) ? 'active' : '' }}">
+     Todas
+  </a>
+
+  <a href="{{ route('home', ['dificultad' => 'muy-facil']) }}"
+     class="chip chip-cyan {{ $f === 'muy-facil' ? 'active' : '' }}">
+     Muy Fácil
+  </a>
+
+  <a href="{{ route('home', ['dificultad' => 'facil']) }}"
+     class="chip chip-green {{ $f === 'facil' ? 'active' : '' }}">
+     Fácil
+  </a>
+
+  <a href="{{ route('home', ['dificultad' => 'medio']) }}"
+     class="chip chip-amber {{ $f === 'medio' ? 'active' : '' }}">
+     Medio
+  </a>
+
+  <a href="{{ route('home', ['dificultad' => 'dificil']) }}"
+     class="chip chip-red {{ $f === 'dificil' ? 'active' : '' }}">
+     Difícil
+  </a>
+</div>
+
+@if($maquinas->isEmpty())
+  <p class="no-results">No hay máquinas para el filtro seleccionado.</p>
+@endif
+
 <div class="machines-grid">
     @foreach ($maquinas as $maquina)
         <article class="machine-row">
@@ -91,7 +169,6 @@
                                     <input type="text" name="autor" class="form-control" required maxlength="120"
                                            value="{{ auth()->user()->name }}" readonly>
                                 </label>
-                          
                             @else
                                 <label style="display:grid; gap:6px;">
                                     Autor
