@@ -7,7 +7,8 @@
   /* ===== Barra superior (Rankings a la izquierda / Filtros a la derecha) ===== */
   .top-bar{
     display:flex; align-items:center; justify-content:space-between;
-    gap:1rem; padding:.5rem 0 1rem; flex-wrap:wrap;
+    gap:1rem; padding:.5rem 1px 1rem;
+    flex-wrap:wrap;
   }
   .rank-actions{
     display:flex; gap:.6rem; align-items:center; flex-wrap:wrap;
@@ -67,6 +68,11 @@
   }
   .table tbody td{ padding:.6rem .8rem; vertical-align:middle; }
   .rank-medal{ font-weight:700; }
+
+  /* ===== UX ===== */
+  .machine-name{
+    cursor:pointer; text-decoration:underline; text-underline-offset:2px;
+  }
 </style>
 
 @php $f = $filtroDificultad ?? null; @endphp
@@ -175,13 +181,23 @@
     @foreach ($maquinas as $maquina)
         <article class="machine-row">
             <div class="machine-main">
-                <span class="machine-name">{{ $maquina->nombre }}</span>
+                {{-- CLICK EN EL NOMBRE => abre Presentación --}}
+                <span class="machine-name open-presentacion"
+                      data-target="pres-{{ $maquina->id ?? $loop->index }}"
+                      role="button"
+                      aria-haspopup="dialog"
+                      aria-controls="pres-{{ $maquina->id ?? $loop->index }}">
+                    {{ $maquina->nombre }}
+                </span>
+
                 <span class="badge {{ $maquina->dificultad_clase }}">
                     {{ $maquina->dificultad_etiqueta }}
                 </span>
 
+                {{-- CLICK EN BOTÓN DESCRIPCIÓN => abre Descripción --}}
                 <button class="btn btn-xs btn-outline open-desc" type="button"
                         data-target="desc-{{ $maquina->id ?? $loop->index }}"
+                        data-ignore-card="1"
                         aria-haspopup="dialog" aria-controls="desc-{{ $maquina->id ?? $loop->index }}">
                     Descripción
                 </button>
@@ -189,16 +205,17 @@
                 <button class="btn btn-xs btn-icon open-upload" type="button"
                         title="Subir writeup"
                         data-target="upload-{{ $maquina->id ?? $loop->index }}"
+                        data-ignore-card="1"
                         aria-haspopup="dialog" aria-controls="upload-{{ $maquina->id ?? $loop->index }}">
                     <i class="fas fa-upload" aria-hidden="true"></i>
                 </button>
 
                 @if($maquina->enlace_descarga)
-                    <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar">
+                    <a href="{{ $maquina->enlace_descarga }}" class="btn btn-xs btn-icon" target="_blank" title="Descargar" data-ignore-card="1" rel="noopener noreferrer">
                         <i class="fas fa-download" aria-hidden="true"></i>
                     </a>
                 @else
-                    <button class="btn btn-xs btn-icon" type="button" title="Descargar" disabled>
+                    <button class="btn btn-xs btn-icon" type="button" title="Descargar" data-ignore-card="1" disabled>
                         <i class="fas fa-download" aria-hidden="true"></i>
                     </button>
                 @endif
@@ -206,12 +223,50 @@
                 <button class="btn btn-xs btn-icon open-book" type="button"
                         title="Ver writeups aprobados"
                         data-target="book-{{ $maquina->id ?? $loop->index }}"
+                        data-ignore-card="1"
                         aria-haspopup="dialog" aria-controls="book-{{ $maquina->id ?? $loop->index }}">
                     <i class="fas fa-book" aria-hidden="true"></i>
                 </button>
             </div>
         </article>
 
+        {{-- ===== MODAL: PRESENTACIÓN (nuevo) ===== --}}
+        <div id="pres-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
+             aria-modal="true" aria-labelledby="pres-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
+            <div class="modal-card" role="document">
+                <header class="modal-header">
+                    <h3 id="pres-title-{{ $maquina->id ?? $loop->index }}" class="modal-title">
+                        {{ $maquina->nombre }} — Presentación
+                    </h3>
+                    <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
+                </header>
+                <div class="modal-body">
+                  <div style="display:grid; grid-template-columns: 240px 1fr; gap:16px; align-items:start;">
+                    <div>
+                      <img src="{{ asset('images/logo.png') }}" alt="Presentación máquina"
+                           style="width:100%; height:auto; display:block; border-radius:12px;">
+                    </div>
+                    <div style="display:grid; gap:12px;">
+                      <dl style="display:grid; grid-template-columns: 140px 1fr; gap:8px 12px; align-items:center;">
+                        <dt style="color:var(--muted,#a8b8d6);">Autor</dt>
+                        <dd>pingu</dd>
+
+                        <dt style="color:var(--muted,#a8b8d6);">Autor URL</dt>
+                        <dd><a href="https://dockerlabs.es" target="_blank" rel="noopener noreferrer">https://dockerlabs.es</a></dd>
+
+                        <dt style="color:var(--muted,#a8b8d6);">Creación</dt>
+                        <dd>2025-10-16</dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                <footer class="modal-footer">
+                    <button class="btn btn-xs modal-close" type="button">Cerrar</button>
+                </footer>
+            </div>
+        </div>
+
+        {{-- ===== MODAL: DESCRIPCIÓN (existente) ===== --}}
         <div id="desc-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
              aria-modal="true" aria-labelledby="desc-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
             <div class="modal-card" role="document">
@@ -230,6 +285,7 @@
             </div>
         </div>
 
+        {{-- ===== MODAL: SUBIR WRITEUP ===== --}}
         <div id="upload-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
              aria-modal="true" aria-labelledby="upload-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
             <div class="modal-card" role="document">
@@ -290,6 +346,7 @@
             </div>
         </div>
 
+        {{-- ===== MODAL: WRITEUPS APROBADOS ===== --}}
         <div id="book-{{ $maquina->id ?? $loop->index }}" class="modal" role="dialog"
              aria-modal="true" aria-labelledby="book-title-{{ $maquina->id ?? $loop->index }}" aria-hidden="true">
             <div class="modal-card" role="document">
@@ -332,26 +389,40 @@
     const close = (el) => { el?.classList.remove('open'); el?.setAttribute('aria-hidden', 'true'); };
 
     document.addEventListener('click', (e) => {
+        /* ===== Nuevo: click en nombre => Presentación ===== */
+        if (e.target.closest('.open-presentacion')) {
+            const id = e.target.closest('.open-presentacion').getAttribute('data-target');
+            open(document.getElementById(id));
+            return;
+        }
+
+        /* ==== Botones/acciones existentes ==== */
         if (e.target.closest('.open-desc')) {
             const id = e.target.closest('.open-desc').getAttribute('data-target');
             open(document.getElementById(id));
+            return;
         }
         if (e.target.closest('.open-upload')) {
             const id = e.target.closest('.open-upload').getAttribute('data-target');
             open(document.getElementById(id));
+            return;
         }
         if (e.target.closest('.open-book')) {
             const id = e.target.closest('.open-book').getAttribute('data-target');
             open(document.getElementById(id));
+            return;
         }
         if (e.target.closest('.open-ranking-jugadores')) {
             const id = e.target.closest('.open-ranking-jugadores').getAttribute('data-target');
             open(document.getElementById(id));
+            return;
         }
         if (e.target.closest('.open-ranking-creadores')) {
             const id = e.target.closest('.open-ranking-creadores').getAttribute('data-target');
             open(document.getElementById(id));
+            return;
         }
+
         if (e.target.matches('.modal-close')) {
             close(e.target.closest('.modal'));
         } else if (e.target.classList && e.target.classList.contains('modal')) {
