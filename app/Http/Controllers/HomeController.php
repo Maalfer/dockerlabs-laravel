@@ -14,14 +14,12 @@ class HomeController extends Controller
         $niveles = ['muy-facil', 'facil', 'medio', 'dificil'];
         $filtro  = $request->query('dificultad');
 
-        // === LISTADO (filtro + paginado) ===
         $maquinas = Maquina::query()
             ->difficulty($filtro)
             ->latest()
             ->paginate(12)
             ->appends($request->query());
 
-        // -------- RANKING JUGADORES (writeups ponderados por dificultad) --------
         $wj = DB::table('writeups as w')
             ->join('maquinas as m', 'm.id', '=', 'w.maquina_id');
 
@@ -75,7 +73,6 @@ class HomeController extends Controller
                 COUNT(*) as total_writeups
             ");
         } else {
-            // Fallback absoluto
             $wj->selectRaw("
                 'Desconocido' as nombre,
                 SUM(CASE LOWER(REPLACE(m.dificultad, ' ', '-'))
@@ -96,46 +93,41 @@ class HomeController extends Controller
             ->limit(100)
             ->get();
 
-        // -------- RANKING CREADORES (nº de máquinas por creador) --------
         $mc = DB::table('maquinas as m');
 
         $maquinasHasUserId = Schema::hasColumn('maquinas', 'user_id');
         $maquinasHasAutor  = Schema::hasColumn('maquinas', 'autor');
 
-        $hasUsersTable   = Schema::hasTable('users');
-        $usersHasId      = $hasUsersTable && Schema::hasColumn('users', 'id');
-        $usersHasName    = $hasUsersTable && Schema::hasColumn('users', 'name');
-        $usersHasUsername= $hasUsersTable && Schema::hasColumn('users', 'username');
-        $usersHasEmail   = $hasUsersTable && Schema::hasColumn('users', 'email');
+        $hasUsersTable2   = Schema::hasTable('users');
+        $usersHasId2      = $hasUsersTable2 && Schema::hasColumn('users', 'id');
+        $usersHasName2    = $hasUsersTable2 && Schema::hasColumn('users', 'name');
+        $usersHasUsername2= $hasUsersTable2 && Schema::hasColumn('users', 'username');
+        $usersHasEmail2   = $hasUsersTable2 && Schema::hasColumn('users', 'email');
 
-        $usersJoined2 = false;
-        if ($maquinasHasUserId && $usersHasId && ($usersHasName || $usersHasUsername || $usersHasEmail)) {
+        if ($maquinasHasUserId && $usersHasId2 && ($usersHasName2 || $usersHasUsername2 || $usersHasEmail2)) {
             $mc->leftJoin('users as u', 'u.id', '=', 'm.user_id');
-            $usersJoined2 = true;
         }
 
-        // Construimos expresión de nombre robusta (evita vacíos con NULLIF)
-        $nombreExprParts = [];
-        if ($usersJoined2) {
-            if ($usersHasName)     $nombreExprParts[] = "NULLIF(u.name, '')";
-            if ($usersHasUsername) $nombreExprParts[] = "NULLIF(u.username, '')";
-            if ($usersHasEmail)    $nombreExprParts[] = "NULLIF(u.email, '')";
-        }
-        if ($maquinasHasAutor)       $nombreExprParts[] = "NULLIF(m.autor, '')";
-        $nombreExprParts[] = "'Desconocido'";
-        $nombreExpr = 'COALESCE(' . implode(', ', $nombreExprParts) . ')';
+        $displayParts = [];
+        if ($maquinasHasAutor)       $displayParts[] = "NULLIF(TRIM(m.autor),'')";
+        if ($usersHasName2)          $displayParts[] = "NULLIF(TRIM(u.name),'')";
+        if ($usersHasUsername2)      $displayParts[] = "NULLIF(TRIM(u.username),'')";
+        if ($usersHasEmail2)         $displayParts[] = "NULLIF(TRIM(u.email),'')";
+        $displayExpr = 'COALESCE(' . implode(', ', $displayParts) . ", 'Desconocido')";
 
-        // Clave de agrupación estable
-        if ($maquinasHasUserId) {
-            $mc->selectRaw("$nombreExpr as nombre, COUNT(*) as total_maquinas, m.user_id as creador_key")
-               ->groupBy('creador_key');
-        } elseif ($maquinasHasAutor) {
-            $mc->selectRaw("$nombreExpr as nombre, COUNT(*) as total_maquinas, TRIM(m.autor) as creador_key")
-               ->groupBy('creador_key');
+        $keyExpr = "CASE WHEN " . ($maquinasHasAutor ? "NULLIF(TRIM(m.autor),'') IS NOT NULL" : "1=0") . " THEN TRIM(m.autor) ";
+        $fallbackUser = [];
+        if ($usersHasUsername2) $fallbackUser[] = "NULLIF(TRIM(u.username),'')";
+        if ($usersHasName2)     $fallbackUser[] = "NULLIF(TRIM(u.name),'')";
+        if ($usersHasEmail2)    $fallbackUser[] = "NULLIF(TRIM(u.email),'')";
+        if ($fallbackUser) {
+            $keyExpr .= "ELSE COALESCE(" . implode(', ', $fallbackUser) . ", 'Desconocido') END";
         } else {
-            $mc->selectRaw("'Desconocido' as nombre, COUNT(*) as total_maquinas")
-               ->groupBy(DB::raw(1));
+            $keyExpr .= "ELSE 'Desconocido' END";
         }
+
+        $mc->selectRaw("$displayExpr as nombre, COUNT(*) as total_maquinas, $keyExpr as creador_key")
+           ->groupBy('creador_key');
 
         $rankingCreadores = $mc
             ->orderByDesc('total_maquinas')

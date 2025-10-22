@@ -22,8 +22,9 @@ class MaquinaController extends Controller
             'dificultad'       => 'required|in:facil,medio,dificil,muy-facil',
             'enlace_descarga'  => 'nullable|url',
             'envio_id'         => 'nullable|integer|exists:envios_maquinas,id',
-            'autor'            => 'nullable|string|max:255',
+            'autor'            => 'required|string|max:255',
             'autor_email'      => 'nullable|string|max:255',
+            'autor_url'        => 'nullable|string|max:255',
         ]);
 
         $maquina = new Maquina();
@@ -35,12 +36,9 @@ class MaquinaController extends Controller
         if (auth()->check()) {
             $maquina->user_id = auth()->id();
         }
-        if (!empty($validated['autor'])) {
-            $maquina->autor = $validated['autor'];
-        }
-        if (!empty($validated['autor_email'])) {
-            $maquina->autor_email = $validated['autor_email'];
-        }
+
+        $maquina->autor = $validated['autor'];
+        $maquina->autor_email = $validated['autor_email'] ?? ($validated['autor_url'] ?? null);
 
         $maquina->save();
 

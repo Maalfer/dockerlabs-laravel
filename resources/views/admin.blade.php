@@ -1,4 +1,3 @@
-{{-- resources/views/admin.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Administración')
@@ -75,9 +74,9 @@
                 </div>
 
                 <div class="form-row">
-                    <label for="autor_url">Autor URL</label>
-                    <input type="url" id="autor_url" name="autor_url" class="form-control"
-                           value="{{ old('autor_url', $prefill['autor_url'] ?? '') }}">
+                    <label for="autor_email">Autor Email</label>
+                    <input type="email" id="autor_email" name="autor_email" class="form-control"
+                           value="{{ old('autor_email', $prefill['autor_email'] ?? ($prefill['autor_url'] ?? '')) }}">
                 </div>
 
                 <div class="form-row">
