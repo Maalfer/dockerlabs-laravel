@@ -7,6 +7,14 @@
     <h2>Enviar máquina</h2>
     <p>Completa el formulario para proponer una nueva máquina.</p>
 
+    @guest
+        <div class="alert alert-info" role="alert" style="margin-bottom:1rem;">
+            ¿Aún no tienes cuenta? Para enviar una máquina más rápido y con tu autoría, 
+            <a href="{{ route('register') }}">regístrate</a> o 
+            <a href="{{ route('login') }}">inicia sesión</a>.
+        </div>
+    @endguest
+
     @if (session('success'))
         <div class="alert alert-success" role="status">{{ session('success') }}</div>
     @endif
@@ -42,8 +50,13 @@
 
         <div class="form-row">
             <label for="autor_nombre">Nombre del autor</label>
-            <input id="autor_nombre" name="autor_nombre" type="text" class="form-control"
-                   value="{{ old('autor_nombre') }}" required>
+            @auth
+                <input id="autor_nombre" name="autor_nombre" type="text" class="form-control"
+                       value="{{ old('autor_nombre', auth()->user()->name) }}" required readonly>
+            @else
+                <input id="autor_nombre" name="autor_nombre" type="text" class="form-control"
+                       value="{{ old('autor_nombre') }}" required>
+            @endauth
         </div>
 
         <div class="form-row">

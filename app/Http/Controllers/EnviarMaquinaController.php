@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\EnvioMaquina;
 
 class EnviarMaquinaController extends Controller
 {
     public function create()
     {
-        // Solo muestra la plantilla con el formulario
         return view('enviar-maquina');
     }
 
     public function store(Request $request)
     {
+        if (Auth::check()) {
+            $request->merge(['autor_nombre' => Auth::user()->name]);
+        }
+
         $data = $request->validate([
             'nombre_maquina'  => ['required','string','max:150'],
             'dificultad'      => ['required','in:facil,medio,dificil'],
