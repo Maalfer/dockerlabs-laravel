@@ -77,6 +77,12 @@
                    value="{{ old('writeup') }}" placeholder="https://...">
         </div>
 
+        <div class="form-row">
+            <label for="enlace_descarga">Enlace de descarga (URL)</label>
+            <input id="enlace_descarga" name="enlace_descarga" type="url" class="form-control"
+                   value="{{ old('enlace_descarga') }}" placeholder="https://...">
+        </div>
+
         <div>
             <button type="submit" class="btn btn-primary">Enviar</button>
             <a href="{{ url('/') }}" class="btn">Cancelar</a>

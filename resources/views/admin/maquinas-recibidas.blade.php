@@ -18,6 +18,7 @@
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Autor</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Fecha creación</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Writeup</th>
+                    <th style="border-bottom:1px solid #ddd; padding:8px;">Enlace de descarga</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Enviado</th>
                     <th style="border-bottom:1px solid #ddd; padding:8px;">Acciones</th>
                 </tr>
@@ -40,6 +41,13 @@
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
                             @if($m->writeup)
                                 <a href="{{ $m->writeup }}" target="_blank" rel="noopener">Ver writeup</a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td style="border-bottom:1px solid #ddd; padding:8px;">
+                            @if($m->enlace_descarga)
+                                <a href="{{ $m->enlace_descarga }}" target="_blank" rel="noopener">Descargar</a>
                             @else
                                 -
                             @endif

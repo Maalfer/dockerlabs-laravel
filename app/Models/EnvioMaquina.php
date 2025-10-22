@@ -15,5 +15,6 @@ class EnvioMaquina extends Model
         'autor_enlace',
         'fecha_creacion',
         'writeup',
+        'enlace_descarga',
     ];
 }
