@@ -4,7 +4,7 @@
 
 @section('content')
 <style>
-  /* ===== Barra superior (Rankings a la izquierda / Filtros a la derecha) ===== */
+
   .top-bar{
     display:flex; align-items:center; justify-content:space-between;
     gap:1rem; padding:.5rem 1px 1rem;
@@ -89,11 +89,11 @@
   </div>
 
   <div class="filters-bar">
-    <a href="{{ route('home') }}" class="chip {{ empty($f) ? 'active' : '' }}">Todas</a>
-    <a href="{{ route('home', ['dificultad' => 'muy-facil']) }}" class="chip chip-cyan {{ $f === 'muy-facil' ? 'active' : '' }}">Muy Fácil</a>
-    <a href="{{ route('home', ['dificultad' => 'facil']) }}" class="chip chip-green {{ $f === 'facil' ? 'active' : '' }}">Fácil</a>
-    <a href="{{ route('home', ['dificultad' => 'medio']) }}" class="chip chip-amber {{ $f === 'medio' ? 'active' : '' }}">Medio</a>
-    <a href="{{ route('home', ['dificultad' => 'dificil']) }}" class="chip chip-red {{ $f === 'dificil' ? 'active' : '' }}">Difícil</a>
+    <a href="{{ route('dockerlabs.home') }}" class="chip {{ empty($f) ? 'active' : '' }}">Todas</a>
+    <a href="{{ route('dockerlabs.home', ['dificultad' => 'muy-facil']) }}" class="chip chip-cyan {{ $f === 'muy-facil' ? 'active' : '' }}">Muy Fácil</a>
+    <a href="{{ route('dockerlabs.home', ['dificultad' => 'facil']) }}" class="chip chip-green {{ $f === 'facil' ? 'active' : '' }}">Fácil</a>
+    <a href="{{ route('dockerlabs.home', ['dificultad' => 'medio']) }}" class="chip chip-amber {{ $f === 'medio' ? 'active' : '' }}">Medio</a>
+    <a href="{{ route('dockerlabs.home', ['dificultad' => 'dificil']) }}" class="chip chip-red {{ $f === 'dificil' ? 'active' : '' }}">Difícil</a>
   </div>
 </div>
 
@@ -295,7 +295,7 @@
                     </h3>
                     <button class="modal-close" type="button" aria-label="Cerrar">&times;</button>
                 </header>
-                <form method="POST" action="{{ route('writeups-temporal.store') }}">
+                <form method="POST" action="{{ route('dockerlabs.writeups-temporal.store') }}">
                     @csrf
                     <input type="hidden" name="maquina_id" value="{{ $maquina->id }}">
                     <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
@@ -304,8 +304,8 @@
                     <div class="modal-body">
                         <div class="alert" style="margin-bottom:10px; padding:.75rem; border:1px solid #ffd6a0; background:#fff3cd; color:#7a4d00;">
                             <strong>Recomendación:</strong> crea una cuenta e inicia sesión para poder gestionar tus writeups.
-                            <a href="{{ route('register') }}" class="link">Registrarme</a> ·
-                            <a href="{{ route('login') }}" class="link">Iniciar sesión</a>
+                            <a href="{{ route('dockerlabs.register') }}" class="link">Registrarme</a> ·
+                            <a href="{{ route('dockerlabs.login') }}" class="link">Iniciar sesión</a>
                         </div>
 
                         <div class="form-row" style="display:grid; gap:10px;">

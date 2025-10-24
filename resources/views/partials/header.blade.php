@@ -1,15 +1,15 @@
 <header class="site-header">
     <h1>DockerLabs</h1>
     <nav class="site-nav">
-        <a href="/">Inicio</a>
-        <a href="{{ route('enviar-maquina.form') }}">Enviar máquina</a>
-        <a href="/">El Búnker</a>
+        <a href="{{ route('dockerlabs.home') }}">Inicio</a>
+        <a href="{{ route('dockerlabs.enviar-maquina.form') }}">Enviar máquina</a>
+        <a href="{{ route('bunkerlabs.login') }}">El Búnker</a>
         <a href="/">Opciones</a>
-        <a href="{{ route('mis-writeups.index') }}">Mis Writeups</a>
+        <a href="{{ route('dockerlabs.mis-writeups.index') }}">Mis Writeups</a>
 
         @guest
-            <a href="{{ route('login') }}">Login</a>
-            <a href="{{ route('register') }}">Registro</a>
+            <a href="{{ route('dockerlabs.login') }}">Login</a>
+            <a href="{{ route('dockerlabs.register') }}">Registro</a>
         @endguest
 
         @auth
@@ -18,15 +18,15 @@
                     Perfil <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </button>
                 <div id="perfil-menu" class="perfil-menu">
-                    <a href="{{ route('profile.edit') }}">Ver / Editar perfil</a>
+                    <a href="{{ route('dockerlabs.profile.edit') }}">Ver / Editar perfil</a>
 
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('profile.roles.index') }}">Gestión de roles</a>
+                        <a href="{{ route('dockerlabs.profile.roles.index') }}">Gestión de roles</a>
                     @endif
 
                     <div class="perfil-divider"></div>
 
-                    <form action="{{ route('logout') }}" method="POST">
+                    <form action="{{ route('dockerlabs.logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="perfil-logout">Cerrar sesión</button>
                     </form>

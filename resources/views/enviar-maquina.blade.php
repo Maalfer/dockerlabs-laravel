@@ -10,8 +10,8 @@
     @guest
         <div class="alert alert-info" role="alert" style="margin-bottom:1rem;">
             ¿Aún no tienes cuenta? Para enviar una máquina más rápido y con tu autoría, 
-            <a href="{{ route('register') }}">regístrate</a> o 
-            <a href="{{ route('login') }}">inicia sesión</a>.
+            <a href="{{ route('dockerlabs.register') }}">regístrate</a> o 
+            <a href="{{ route('dockerlabs.login') }}">inicia sesión</a>.
         </div>
     @endguest
 
@@ -29,7 +29,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('enviar-maquina.store') }}" novalidate style="display:grid; gap:14px;">
+    <form method="POST" action="{{ route('dockerlabs.enviar-maquina.store') }}" novalidate style="display:grid; gap:14px;">
         @csrf
 
         <div class="form-row">
@@ -85,7 +85,7 @@
 
         <div>
             <button type="submit" class="btn btn-primary">Enviar</button>
-            <a href="{{ url('/') }}" class="btn">Cancelar</a>
+            <a href="{{ route('dockerlabs.home') }}" class="btn">Cancelar</a>
         </div>
     </form>
 </div>
