@@ -21,4 +21,12 @@
             Entrar
         </button>
     </form>
+
+    {{-- Botón adicional para acceder al login de Bunkerlabs --}}
+    <div style="text-align:center; margin-top:1.5rem;">
+        <a href="{{ route('login.bunkerlabs') }}"
+           style="display:inline-block; padding:0.65rem 1.25rem; background:#9f1239; color:white; text-decoration:none; border-radius:6px;">
+            Bunkerlabs
+        </a>
+    </div>
 @endsection

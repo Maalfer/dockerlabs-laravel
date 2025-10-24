@@ -30,6 +30,15 @@
             </div>
         @endif
 
+        {{-- Mostrar token plano de Bunkerlabs cuando se crea (solo una vez) --}}
+        @if (session('bunker_token_plain'))
+            <div style="margin:1rem 0; padding:0.75rem; background:#064e3b; color:#ecfdf5; border:1px solid #10b981; border-radius:8px;">
+                <strong>Nuevo token Bunkerlabs:</strong>
+                <span style="word-break:break-all;">{{ session('bunker_token_plain') }}</span>
+                <div style="margin-top:0.4rem; opacity:.9;">Cópialo y guárdalo ahora. No volverá a mostrarse.</div>
+            </div>
+        @endif
+
         {{-- RESUMEN / STATS --}}
         <section style="margin:1.25rem 0;">
             <h3 style="margin:0 0 0.75rem 0;">Resumen</h3>
@@ -112,6 +121,12 @@
                     <i class="fas fa-upload"></i> Enviar Máquina
                 </a>
 
+                {{-- Acceso a login Bunkerlabs (token) para cualquiera que tenga el link --}}
+                <a href="{{ route('login.bunkerlabs') }}"
+                   style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#9f1239; color:#fff; text-decoration:none;">
+                    <i class="fas fa-shield-alt"></i> Login Bunkerlabs (token)
+                </a>
+
                 {{-- Moderación (admin o moderador) --}}
                 @if($user->isAdmin() || $user->isModerator())
                     <a href="{{ route('admin.writeups-temporal.index') }}"
@@ -137,6 +152,81 @@
                 @endif
             </div>
         </section>
+
+        {{-- BUNKERLABS: Gestión de tokens (solo admin) --}}
+        @if($user->isAdmin())
+            <section style="margin:1.5rem 0;">
+                <h3 style="margin:0 0 0.75rem 0;">Bunkerlabs — Gestión de tokens</h3>
+
+                {{-- Crear token --}}
+                <form method="POST" action="{{ route('perfil.bunker.tokens.create') }}" style="margin-bottom:1rem;">
+                    @csrf
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <input type="text" name="name" placeholder="Etiqueta (opcional)" style="padding:.5rem; flex:1; min-width:220px;">
+                        <input type="datetime-local" name="expires_at" style="padding:.5rem;">
+                        <button type="submit"
+                                style="padding:.55rem 1rem; background:#1f2937; color:#fff; border:0; border-radius:6px; cursor:pointer;">
+                            Crear token
+                        </button>
+                    </div>
+                </form>
+
+                {{-- Listado de tokens --}}
+                @php($tokens = \App\Models\BunkerToken::orderByDesc('id')->limit(100)->get())
+                <div style="overflow:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:680px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">ID</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">Nombre</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">Activo</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">Expira</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">Usado</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155; color:#e5e7eb;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($tokens as $t)
+                                <tr>
+                                    <td style="padding:.5rem; color:#e5e7eb;">{{ $t->id }}</td>
+                                    <td style="padding:.5rem; color:#e5e7eb;">{{ $t->name }}</td>
+                                    <td style="padding:.5rem; color:#e5e7eb;">{{ $t->active ? 'Sí' : 'No' }}</td>
+                                    <td style="padding:.5rem; color:#e5e7eb;">
+                                        {{ $t->expires_at ? $t->expires_at->format('Y-m-d H:i') : '—' }}
+                                    </td>
+                                    <td style="padding:.5rem; color:#e5e7eb;">
+                                        {{ $t->used_at ? $t->used_at->format('Y-m-d H:i') : '—' }}
+                                    </td>
+                                    <td style="padding:.5rem;">
+                                        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                                            <form method="POST" action="{{ route('perfil.bunker.tokens.toggle', $t->id) }}">
+                                                @csrf
+                                                <button type="submit"
+                                                        style="padding:.35rem .65rem; border-radius:6px; background:#1e293b; color:#fff; border:0; cursor:pointer;">
+                                                    {{ $t->active ? 'Desactivar' : 'Activar' }}
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ route('perfil.bunker.tokens.delete', $t->id) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        style="padding:.35rem .65rem; border-radius:6px; background:#3b0d16; color:#fca5a5; border:1px solid #7a1631; cursor:pointer;">
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="padding:.75rem; color:#9ca3af;">No hay tokens creados.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        @endif
 
         {{-- FORMULARIO PERFIL --}}
         <section style="margin:1.5rem 0;">

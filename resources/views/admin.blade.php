@@ -30,6 +30,22 @@
                 </div>
             @endif
 
+            {{-- Barra superior: título + botón Gestionar tokens --}}
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap;">
+                <h2 style="margin:0;">Administración</h2>
+
+                @if(auth()->check() && method_exists(auth()->user(), 'isAdmin') ? auth()->user()->isAdmin() : (auth()->user()->role ?? null) === 'admin')
+                    <button id="btn-gestionar-tokens"
+                            type="button"
+                            class="btn"
+                            style="background:#9f1239; color:#fff; border:0; padding:.5rem .9rem; border-radius:8px; cursor:pointer;">
+                        Gestionar tokens
+                    </button>
+                @endif
+            </div>
+
+            <hr class="divider">
+
             <h2>Agregar Nueva Máquina</h2>
 
             <form action="{{ route('admin.maquinas.store') }}" method="POST" class="form">
@@ -147,4 +163,161 @@
             @endif
         </div>
     </div>
+
+    {{-- MODAL: Gestión de tokens Bunkerlabs (solo render si es admin) --}}
+    @if(auth()->check() && (method_exists(auth()->user(), 'isAdmin') ? auth()->user()->isAdmin() : (auth()->user()->role ?? null) === 'admin'))
+    <div id="modal-tokens"
+         style="position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:9999;">
+        <div style="width:clamp(320px, 92vw, 760px); background:#0f172a; color:#fff; border:1px solid #334155; border-radius:12px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid #334155;">
+                <strong>Tokens Bunkerlabs</strong>
+                <button id="btn-cerrar-modal" type="button"
+                        style="background:transparent; color:#fff; border:0; font-size:1.25rem; cursor:pointer;">×</button>
+            </div>
+
+            <div style="padding:1rem;">
+                {{-- Crear token --}}
+                <form id="form-crear-token" style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+                    <input type="text" name="name" placeholder="Etiqueta (opcional)" style="padding:.5rem; flex:1; min-width:220px;">
+                    <button type="submit"
+                            style="padding:.5rem .9rem; background:#1f2937; color:#fff; border:0; border-radius:8px; cursor:pointer;">
+                        Crear token
+                    </button>
+                </form>
+
+                {{-- Mensaje de token plano al crear --}}
+                <div id="nuevo-token"
+                     style="display:none; background:#064e3b; color:#ecfdf5; border:1px solid #10b981; border-radius:8px; padding:.6rem .75rem; margin-bottom:1rem;">
+                </div>
+
+                {{-- Lista de tokens --}}
+                <div style="overflow:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:640px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155;">ID</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155;">Nombre</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155;">Activo</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155;">Creado</th>
+                                <th style="text-align:left; padding:.5rem; border-bottom:1px solid #334155;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tokens-tbody">
+                            {{-- Se rellena por JS --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 @endsection
+
+@push('scripts')
+<script>
+(function(){
+  const btnOpen = document.getElementById('btn-gestionar-tokens');
+  const modal   = document.getElementById('modal-tokens');
+  if(!btnOpen || !modal) return; // si no es admin, no renderiza
+
+  const btnClose= document.getElementById('btn-cerrar-modal');
+  const tbody   = document.getElementById('tokens-tbody');
+  const form    = document.getElementById('form-crear-token');
+  const msgNew  = document.getElementById('nuevo-token');
+  const csrfTag = document.querySelector('meta[name="csrf-token"]');
+  const csrf    = csrfTag ? csrfTag.getAttribute('content') : '';
+
+  function show(){ modal.style.display = 'flex'; loadTokens(); }
+  function hide(){ modal.style.display = 'none'; msgNew.style.display = 'none'; msgNew.textContent=''; }
+
+  btnOpen.addEventListener('click', show);
+  btnClose.addEventListener('click', hide);
+  modal.addEventListener('click', (e)=>{ if(e.target === modal) hide(); });
+
+  async function loadTokens(){
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:.75rem; color:#9ca3af;">Cargando...</td></tr>';
+    try{
+      const res  = await fetch(`{{ route('admin.bunker.tokens.index') }}`, { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      if(!Array.isArray(data) || data.length === 0){
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:.75rem; color:#9ca3af;">No hay tokens creados.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      for(const t of data){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="padding:.5rem;">${t.id}</td>
+          <td style="padding:.5rem;">${t.name ?? ''}</td>
+          <td style="padding:.5rem;">${t.active ? 'Sí' : 'No'}</td>
+          <td style="padding:.5rem;">${new Date(t.created_at).toLocaleString()}</td>
+          <td style="padding:.5rem;">
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+              <button data-id="${t.id}" data-action="toggle"
+                      style="padding:.35rem .65rem; border-radius:6px; background:#1e293b; color:#fff; border:0; cursor:pointer;">
+                ${t.active ? 'Desactivar' : 'Activar'}
+              </button>
+              <button data-id="${t.id}" data-action="delete"
+                      style="padding:.35rem .65rem; border-radius:6px; background:#3b0d16; color:#fca5a5; border:1px solid #7a1631; cursor:pointer;">
+                Eliminar
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }catch(e){
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:.75rem; color:#fca5a5;">Error cargando tokens.</td></tr>';
+    }
+  }
+
+  tbody.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button[data-action]');
+    if(!btn) return;
+    const id = btn.getAttribute('data-id');
+    const action = btn.getAttribute('data-action');
+    try{
+      if(action === 'toggle'){
+        await fetch(`{{ url('/admin/bunkerlabs/tokens') }}/${id}/toggle`, {
+          method: 'POST',
+          headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
+        });
+        loadTokens();
+      }else if(action === 'delete'){
+        if(!confirm('¿Eliminar token?')) return;
+        await fetch(`{{ url('/admin/bunkerlabs/tokens') }}/${id}`, {
+          method: 'DELETE',
+          headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
+        });
+        loadTokens();
+      }
+    }catch(e){
+      alert('Ocurrió un error realizando la acción.');
+    }
+  });
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const fd = new FormData(form);
+    try{
+      const res = await fetch(`{{ route('admin.bunker.tokens.store') }}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+        body: fd
+      });
+      const data = await res.json();
+      if(data && data.ok && data.plain){
+        msgNew.style.display = 'block';
+        msgNew.textContent = 'Nuevo token (cópialo ahora): ' + data.plain;
+        form.reset();
+        loadTokens();
+      }else{
+        alert('No se pudo crear el token.');
+      }
+    }catch(e){
+      alert('Error al crear el token.');
+    }
+  });
+})();
+</script>
+@endpush

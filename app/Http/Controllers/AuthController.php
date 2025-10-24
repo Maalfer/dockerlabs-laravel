@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\BunkerToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,44 @@ class AuthController extends Controller
             'email' => 'Credenciales incorrectas.',
         ])->withInput();
     }
+
+    // ====== Bunkerlabs por token ======
+
+    // GET /login-bunkerlabs
+    public function showLoginBunker()
+    {
+        return view('login-bunkerlabs');
+    }
+
+    // POST /login-bunkerlabs (token-only, permanente)
+    public function loginBunker(Request $request)
+    {
+        $data = $request->validate([
+            'token' => ['required','string','min:8'],
+        ]);
+
+        $plain = trim($data['token']);
+
+        // Buscar cualquier token activo y comprobar por hash (tokens permanentes)
+        $token = BunkerToken::query()
+            ->where('active', true)
+            ->get()
+            ->first(function ($t) use ($plain) {
+                return Hash::check($plain, $t->token_hash);
+            });
+
+        if (!$token) {
+            return back()->withErrors(['token' => 'Token inv�lido.'])->withInput();
+        }
+
+        // Importante: regenerar la sesi�n ANTES de poner la bandera
+        $request->session()->regenerate();
+        $request->session()->put('bunkerlabs_authenticated', true);
+
+        return redirect()->route('home.bunkerlabs');
+    }
+
+    // ====== Fin Bunkerlabs ======
 
     // GET /registro
     public function showRegister()
@@ -63,6 +102,9 @@ class AuthController extends Controller
     // POST /logout
     public function logout(Request $request)
     {
+        // Limpia tambi�n la sesi�n de Bunkerlabs
+        $request->session()->forget('bunkerlabs_authenticated');
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
