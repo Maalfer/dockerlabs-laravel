@@ -13,25 +13,25 @@
     @auth
         <nav class="nav" style="margin: 10px auto; max-width:1100px; padding: 0 1rem;">
             @if(auth()->user()->isAdmin())
-                <a href="{{ route('admin') }}">
+                <a href="{{ route('dockerlabs.admin.dashboard') }}">
                     <i class="fas fa-cogs"></i> Agregar Máquina
                 </a>
             @endif
 
             @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
-                <a href="{{ route('admin.writeups-temporal.index') }}">
+                <a href="{{ route('dockerlabs.admin.writeups-temporal.index') }}">
                     <i class="fas fa-hourglass-half"></i> Pendientes
                 </a>
             @endif
 
             @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
-                <a href="{{ route('admin.writeups.index') }}">
+                <a href="{{ route('dockerlabs.admin.writeups.index') }}">
                     <i class="fas fa-check-circle"></i> Aprobados
                 </a>
             @endif
 
             @if(auth()->user()->isAdmin() || auth()->user()->isModerator())
-                <a href="{{ route('admin.maquinas.recibidas') }}">
+                <a href="{{ route('dockerlabs.admin.maquinas.recibidas') }}">
                     <i class="fas fa-inbox"></i> Recibidas
                 </a>
             @endif

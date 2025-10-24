@@ -53,7 +53,7 @@
                     </div>
                     <div style="margin-top:8px;">
                         @if(($stats['writeups_pendientes_user'] ?? 0) > 0)
-                            <a href="{{ route('admin.writeups-temporal.index') }}" style="text-decoration:none; color:#93c5fd;">Revisar</a>
+                            <a href="{{ route('dockerlabs.admin.writeups-temporal.index') }}" style="text-decoration:none; color:#93c5fd;">Revisar</a>
                         @endif
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                         {{ $stats['writeups_aprobados_user'] ?? 0 }}
                     </div>
                     <div style="margin-top:8px;">
-                        <a href="{{ route('mis-writeups.index') }}" style="text-decoration:none; color:#93c5fd;">Ver mis writeups</a>
+                        <a href="{{ route('dockerlabs.mis-writeups.index') }}" style="text-decoration:none; color:#93c5fd;">Ver mis writeups</a>
                     </div>
                 </div>
 
@@ -76,7 +76,7 @@
                         {{ $stats['maquinas_enviadas_user'] ?? 0 }}
                     </div>
                     <div style="margin-top:8px;">
-                        <a href="{{ route('enviar-maquina.form') }}" style="text-decoration:none; color:#93c5fd;">Enviar nueva</a>
+                        <a href="{{ route('dockerlabs.enviar-maquina.form') }}" style="text-decoration:none; color:#93c5fd;">Enviar nueva</a>
                     </div>
                 </div>
 
@@ -90,7 +90,7 @@
                     </div>
                     @if(($user->isAdmin() || $user->isModerator()))
                         <div style="margin-top:8px;">
-                            <a href="{{ route('admin.maquinas.recibidas') }}" style="text-decoration:none; color:#93c5fd;">Ver recibidas</a>
+                            <a href="{{ route('dockerlabs.admin.maquinas.recibidas') }}" style="text-decoration:none; color:#93c5fd;">Ver recibidas</a>
                         </div>
                     @endif
                 </div>
@@ -112,28 +112,28 @@
             <h3 style="margin:0 0 0.75rem 0;">Accesos rápidos</h3>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
                 {{-- Todos los usuarios --}}
-                <a href="{{ route('mis-writeups.index') }}"
+                <a href="{{ route('dockerlabs.mis-writeups.index') }}"
                    style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#1e293b; color:#fff; text-decoration:none;">
                     <i class="fas fa-file-alt"></i> Mis Writeups
                 </a>
-                <a href="{{ route('enviar-maquina.form') }}"
+                <a href="{{ route('dockerlabs.enviar-maquina.form') }}"
                    style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#1e293b; color:#fff; text-decoration:none;">
                     <i class="fas fa-upload"></i> Enviar Máquina
                 </a>
 
                 {{-- Acceso a login Bunkerlabs (token) para cualquiera que tenga el link --}}
-                <a href="{{ route('login.bunkerlabs') }}"
+                <a href="{{ route('bunkerlabs.login') }}"
                    style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#9f1239; color:#fff; text-decoration:none;">
                     <i class="fas fa-shield-alt"></i> Login Bunkerlabs (token)
                 </a>
 
                 {{-- Moderación (admin o moderador) --}}
                 @if($user->isAdmin() || $user->isModerator())
-                    <a href="{{ route('admin.writeups-temporal.index') }}"
+                    <a href="{{ route('dockerlabs.admin.writeups-temporal.index') }}"
                        style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#334155; color:#fff; text-decoration:none;">
                         <i class="fas fa-hourglass-half"></i> Moderar Writeups Pendientes
                     </a>
-                    <a href="{{ route('admin.maquinas.recibidas') }}"
+                    <a href="{{ route('dockerlabs.admin.maquinas.recibidas') }}"
                        style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#334155; color:#fff; text-decoration:none;">
                         <i class="fas fa-inbox"></i> Máquinas Recibidas
                     </a>
@@ -141,11 +141,11 @@
 
                 {{-- Admin exclusivo --}}
                 @if($user->isAdmin())
-                    <a href="{{ route('admin') }}"
+                    <a href="{{ route('dockerlabs.admin.dashboard') }}"
                        style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#475569; color:#fff; text-decoration:none;">
                         <i class="fas fa-cogs"></i> Agregar Máquina
                     </a>
-                    <a href="{{ route('profile.roles.index') }}"
+                    <a href="{{ route('dockerlabs.profile.roles.index') }}"
                        style="display:inline-block; padding:0.5rem 0.8rem; border-radius:8px; background:#475569; color:#fff; text-decoration:none;">
                         <i class="fas fa-users-cog"></i> Gestión de roles
                     </a>
@@ -159,7 +159,7 @@
                 <h3 style="margin:0 0 0.75rem 0;">Bunkerlabs — Gestión de tokens</h3>
 
                 {{-- Crear token --}}
-                <form method="POST" action="{{ route('perfil.bunker.tokens.create') }}" style="margin-bottom:1rem;">
+                <form method="POST" action="{{ route('bunkerlabs.perfil.tokens.create') }}" style="margin-bottom:1rem;">
                     @csrf
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
                         <input type="text" name="name" placeholder="Etiqueta (opcional)" style="padding:.5rem; flex:1; min-width:220px;">
@@ -199,14 +199,14 @@
                                     </td>
                                     <td style="padding:.5rem;">
                                         <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-                                            <form method="POST" action="{{ route('perfil.bunker.tokens.toggle', $t->id) }}">
+                                            <form method="POST" action="{{ route('bunkerlabs.perfil.tokens.toggle', $t->id) }}">
                                                 @csrf
                                                 <button type="submit"
                                                         style="padding:.35rem .65rem; border-radius:6px; background:#1e293b; color:#fff; border:0; cursor:pointer;">
                                                     {{ $t->active ? 'Desactivar' : 'Activar' }}
                                                 </button>
                                             </form>
-                                            <form method="POST" action="{{ route('perfil.bunker.tokens.delete', $t->id) }}">
+                                            <form method="POST" action="{{ route('bunkerlabs.perfil.tokens.delete', $t->id) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
@@ -232,7 +232,7 @@
         <section style="margin:1.5rem 0;">
             <h3 style="margin:0 0 0.75rem 0;">Datos de la cuenta</h3>
 
-            <form method="POST" action="{{ route('profile.update') }}" style="max-width:600px;">
+            <form method="POST" action="{{ route('dockerlabs.profile.update') }}" style="max-width:600px;">
                 @csrf
                 @method('PUT')
 
