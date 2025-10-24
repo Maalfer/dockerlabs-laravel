@@ -60,7 +60,7 @@ Route::as('dockerlabs.')->group(function () {
     // ============================
     // ENVÍO DE MÁQUINAS
     // ============================
-    Route::get('/enviar-maquina', [EnviarMaquinaController::class, 'form'])->name('enviar-maquina.form');
+    Route::get('/enviar-maquina', [EnviarMaquinaController::class, 'create'])->name('enviar-maquina.form');
     Route::post('/enviar-maquina', [EnviarMaquinaController::class, 'store'])->name('enviar-maquina.store');
 
     // ============================

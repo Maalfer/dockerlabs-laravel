@@ -8,35 +8,45 @@ use App\Models\EnvioMaquina;
 
 class EnviarMaquinaController extends Controller
 {
+    /**
+     * Muestra el formulario para enviar una nueva máquina.
+     */
     public function create()
     {
         return view('enviar-maquina');
     }
 
+    /**
+     * Procesa el envío del formulario de máquina.
+     */
     public function store(Request $request)
     {
+        // Si el usuario está logueado, usamos su nombre como autor.
         if (Auth::check()) {
             $request->merge(['autor_nombre' => Auth::user()->name]);
         }
 
+        // Validamos los campos del formulario.
         $data = $request->validate([
-            'nombre_maquina'   => ['required','string','max:150'],
-            'dificultad'       => ['required','in:facil,medio,dificil'],
-            'autor_nombre'     => ['required','string','max:120'],
-            'autor_enlace'     => ['nullable','url','max:255'],
-            'fecha_creacion'   => ['nullable','date'],
-            'writeup'          => ['nullable','url','max:255'],
-            'enlace_descarga'  => ['nullable','url','max:255'],
+            'nombre_maquina'   => ['required', 'string', 'max:150'],
+            'dificultad'       => ['required', 'in:facil,medio,dificil'],
+            'autor_nombre'     => ['required', 'string', 'max:120'],
+            'autor_enlace'     => ['nullable', 'url', 'max:255'],
+            'fecha_creacion'   => ['nullable', 'date'],
+            'writeup'          => ['nullable', 'url', 'max:255'],
+            'enlace_descarga'  => ['nullable', 'url', 'max:255'],
         ], [
-            'autor_enlace.url'   => 'El enlace del autor debe ser una URL válida.',
-            'writeup.url'        => 'El writeup debe ser una URL válida.',
-            'enlace_descarga.url'=> 'El enlace de descarga debe ser una URL válida.',
+            'autor_enlace.url'    => 'El enlace del autor debe ser una URL válida.',
+            'writeup.url'         => 'El writeup debe ser una URL válida.',
+            'enlace_descarga.url' => 'El enlace de descarga debe ser una URL válida.',
         ]);
-        
+
+        // Guardamos la máquina enviada
         EnvioMaquina::create($data);
 
+        // Redirigimos a la misma página con mensaje de éxito
         return redirect()
-            ->route('enviar-maquina.form')
+            ->route('dockerlabs.enviar-maquina.form')
             ->with('success', '¡Gracias! Hemos recibido tu envío.');
     }
 }
