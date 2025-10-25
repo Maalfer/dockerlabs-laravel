@@ -42,7 +42,7 @@
                     <td style="padding:0.5rem;">{{ $u->name }}</td>
                     <td style="padding:0.5rem;">{{ $u->email }}</td>
                     <td style="padding:0.5rem;">
-                        <form method="POST" action="{{ route('profile.roles.update', $u) }}">
+                        <form method="POST" action="{{ route('dockerlabs.profile.roles.update', $u) }}">
                             @csrf
                             @method('PATCH')
                             <select name="role" onchange="this.form.submit()"
@@ -54,7 +54,7 @@
                         </form>
                     </td>
                     <td style="padding:0.5rem;">
-                        <form method="POST" action="{{ route('profile.roles.destroyUser', $u) }}"
+                        <form method="POST" action="{{ route('dockerlabs.profile.roles.destroyUser', $u) }}"
                               onsubmit="return confirm('¿Eliminar usuario {{ $u->email }}? Esta acción es irreversible.');">
                             @csrf
                             @method('DELETE')

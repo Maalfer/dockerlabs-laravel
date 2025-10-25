@@ -53,7 +53,7 @@ Route::as('dockerlabs.')->group(function () {
 
         Route::middleware([RoleMiddleware::class . ':admin'])->group(function () {
             Route::get('/perfil/roles', [ProfileController::class, 'rolesIndex'])->name('profile.roles.index');
-            Route::post('/perfil/roles', [ProfileController::class, 'rolesUpdate'])->name('profile.roles.update');
+            Route::patch('/perfil/roles/{user}', [ProfileController::class, 'rolesUpdate'])->name('profile.roles.update');
             Route::delete('/perfil/roles/{user}', [ProfileController::class, 'destroyUser'])->name('profile.roles.destroyUser');
         });
     });
