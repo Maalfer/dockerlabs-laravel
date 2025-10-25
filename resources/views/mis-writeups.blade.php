@@ -60,7 +60,7 @@
 
                         @unless($pend)
                         <form method="POST"
-                              action="{{ route('mis-writeups.solicitar-cambio', $w->id) }}"
+                              action="{{ route('dockerlabs.mis-writeups.solicitar-cambio', $w->id) }}"
                               class="wu-form">
                             @csrf
 
