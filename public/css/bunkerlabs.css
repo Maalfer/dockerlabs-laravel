@@ -1,139 +1,209 @@
 body.bunkerlabs{
-  --bg-deep:#120a16;
-  --bg-elev:#1a0f23;
-  --surface:#1e132b;
-  --surface-2:#1a1027;
+  --bg-deep:#0f0a12;
+  --bg-elev:#15101b;
+  --surface:#181224;
+  --surface-2:#1c1428;
+
   --brand-700:#5a008b;
-  --brand-600:#7600a8;
+  --brand-600:#7a1fb0;
   --brand-500:#9b1bcf;
   --brand-400:#c545e6;
   --brand-300:#ef8bed;
   --brand-200:#ffd2f7;
-  --text:#f3e9f7;
-  --muted:#cdb9d8;
-  --border:rgba(255,182,240,0.17);
-  --shadow:0 12px 32px rgba(53,0,80,.45);
+
+  --text:#f4ecfa;
+  --muted:#cbb4d8;
+  --border:rgba(236,167,250,.18);
+  --border-strong:rgba(236,167,250,.28);
+
+  --shadow:0 8px 24px rgba(60,0,85,.25);
+  --radius:14px;
+  --radius-sm:10px;
+  --radius-xs:999px;
+  --gap:14px;
+  --gap-lg:22px;
+  --chip-h:32px;
+  --btn-h:36px;
+
   --ok-600:#22c55e;
   --warn-600:#f59e0b;
   --danger-600:#e11d48;
-  --grad-1:radial-gradient(1200px 700px at 10% -10%, rgba(155,27,207,.18) 0%, transparent 60%);
-  --grad-2:radial-gradient(900px 500px at 110% -10%, rgba(197,69,230,.12) 0%, transparent 60%);
 }
 
-body.bunkerlabs ::selection{
-  background: rgba(239,139,237,.35);
-  color:#fff;
+body.bunkerlabs{
+  background: radial-gradient(900px 480px at 10% -10%, rgba(155,27,207,.12) 0%, transparent 60%),
+              radial-gradient(700px 360px at 120% -10%, rgba(197,69,230,.09) 0%, transparent 60%),
+              var(--bg-deep);
+  color: var(--text);
 }
 
+body.bunkerlabs ::selection{ background: rgba(239,139,237,.28); color:#fff; }
+
+/* Header / Footer */
 body.bunkerlabs .site-header{
-  background: linear-gradient(180deg, rgba(155,27,207,.22), rgba(26,15,35,.65));
+  background: rgba(24,18,36,.7);
+  backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow);
 }
-body.bunkerlabs .site-header h1{
-  color: var(--brand-200);
-}
+body.bunkerlabs .site-header h1{ color: var(--brand-200); letter-spacing:.2px; }
 body.bunkerlabs .site-nav a{
-  color: var(--brand-300);
+  color: #ead4f3;
+  padding:.45rem .7rem;
+  border-radius: var(--radius-sm);
+  transition: transform .12s ease, background-color .12s ease;
 }
 body.bunkerlabs .site-nav a:hover{
-  color:#fff;
-  text-shadow: 0 0 6px rgba(197,69,230,.35);
+  background: rgba(155,27,207,.16);
+  transform: translateY(-1px);
 }
 
 body.bunkerlabs .site-footer{
-  background: linear-gradient(0deg, rgba(155,27,207,.12), rgba(26,15,35,.55));
+  background: rgba(24,18,36,.65);
   border-top: 1px solid var(--border);
   color: var(--muted);
 }
 
+/* Botones */
 body.bunkerlabs .btn,
 body.bunkerlabs button,
 body.bunkerlabs .button{
-  border-color: var(--border);
-  color: #fff;
+  height: var(--btn-h);
+  line-height: calc(var(--btn-h) - 2px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 .8rem;
+  color:#fff;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  transition: transform .12s ease, filter .12s ease, background .12s ease, border-color .12s ease;
 }
+body.bunkerlabs .btn:hover,
+body.bunkerlabs button:hover,
+body.bunkerlabs .button:hover{
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+}
+
 body.bunkerlabs .btn-primary,
 body.bunkerlabs button.btn-primary{
   background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
-  border: 1px solid rgba(239,139,237,.35);
+  border: 1px solid var(--border-strong);
 }
-body.bunkerlabs .btn-primary:hover{
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-}
+body.bunkerlabs .btn-primary:hover{ filter: brightness(1.06); }
+
 body.bunkerlabs .btn-secondary{
-  background: var(--surface-2);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
   color: var(--brand-200);
+}
+body.bunkerlabs .btn-xs{ height: 30px; line-height: 28px; padding: 0 .65rem; font-size:.9rem; }
+body.bunkerlabs .btn-outline{
+  background: transparent;
+  color: #fff;
   border: 1px solid var(--border);
 }
-body.bunkerlabs .btn-secondary:hover{
-  background: var(--surface);
-  color:#fff;
+body.bunkerlabs .btn-outline:hover{
+  background: rgba(155,27,207,.12);
+  border-color: var(--border-strong);
 }
 
+/* Chips / Filtros */
 body.bunkerlabs .chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: var(--chip-h);
+  padding: 0 .75rem;
   border:1px solid var(--border);
-  color: var(--brand-200);
+  border-radius: var(--radius-xs);
+  color: #f8eaff;
+  background: rgba(155,27,207,.10);
+  transition: background .12s ease, transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
-body.bunkerlabs .chip.active{
-  box-shadow: 0 0 0 2px rgba(239,139,237,.25) inset;
+body.bunkerlabs .chip:hover{
+  background: rgba(155,27,207,.16);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
+body.bunkerlabs .chip.active{ box-shadow: inset 0 0 0 2px rgba(239,139,237,.22); }
 
+/* Dificultades: filtros y badges */
 body.bunkerlabs .chip-cyan,
 body.bunkerlabs .badge-cyan{
-  background: rgba(34,211,238,.15);
-  border:1px solid rgba(34,211,238,.35);
-  color:#bff8ff;
+  background: rgba(34,211,238,.14);
+  border:1px solid rgba(34,211,238,.32);
+  color:#c9fbff;
 }
 body.bunkerlabs .chip-cyan:hover,
-body.bunkerlabs .badge-cyan:hover{
-  background: rgba(34,211,238,.22);
-}
-body.bunkerlabs .chip-cyan.active{ box-shadow: 0 0 0 2px rgba(34,211,238,.25) inset; }
+body.bunkerlabs .badge-cyan:hover{ background: rgba(34,211,238,.22); }
+body.bunkerlabs .chip-cyan.active{ box-shadow: inset 0 0 0 2px rgba(34,211,238,.24); }
 
 body.bunkerlabs .chip-green,
 body.bunkerlabs .badge-green{
-  background: rgba(34,197,94,.15);
-  border:1px solid rgba(34,197,94,.35);
-  color:#bbffd9;
+  background: rgba(34,197,94,.14);
+  border:1px solid rgba(34,197,94,.32);
+  color:#ceffe3;
 }
 body.bunkerlabs .chip-green:hover,
-body.bunkerlabs .badge-green:hover{
-  background: rgba(34,197,94,.22);
-}
-body.bunkerlabs .chip-green.active{ box-shadow: 0 0 0 2px rgba(34,197,94,.25) inset; }
+body.bunkerlabs .badge-green:hover{ background: rgba(34,197,94,.22); }
+body.bunkerlabs .chip-green.active{ box-shadow: inset 0 0 0 2px rgba(34,197,94,.24); }
 
 body.bunkerlabs .chip-amber,
 body.bunkerlabs .badge-amber{
-  background: rgba(245,158,11,.15);
-  border:1px solid rgba(245,158,11,.35);
-  color:#ffe6b6;
+  background: rgba(245,158,11,.14);
+  border:1px solid rgba(245,158,11,.34);
+  color:#ffeac2;
 }
 body.bunkerlabs .chip-amber:hover,
-body.bunkerlabs .badge-amber:hover{
-  background: rgba(245,158,11,.22);
-}
-body.bunkerlabs .chip-amber.active{ box-shadow: 0 0 0 2px rgba(245,158,11,.25) inset; }
+body.bunkerlabs .badge-amber:hover{ background: rgba(245,158,11,.22); }
+body.bunkerlabs .chip-amber.active{ box-shadow: inset 0 0 0 2px rgba(245,158,11,.24); }
 
 body.bunkerlabs .chip-red,
 body.bunkerlabs .badge-red{
-  background: rgba(239,68,68,.15);
-  border:1px solid rgba(239,68,68,.35);
-  color:#ffd1d1;
+  background: rgba(239,68,68,.14);
+  border:1px solid rgba(239,68,68,.34);
+  color:#ffd6d6;
 }
 body.bunkerlabs .chip-red:hover,
-body.bunkerlabs .badge-red:hover{
-  background: rgba(239,68,68,.22);
-}
-body.bunkerlabs .chip-red.active{ box-shadow: 0 0 0 2px rgba(239,68,68,.25) inset; }
+body.bunkerlabs .badge-red:hover{ background: rgba(239,68,68,.22); }
+body.bunkerlabs .chip-red.active{ box-shadow: inset 0 0 0 2px rgba(239,68,68,.24); }
 
-body.bunkerlabs .card{
+/* Badges tama�o y forma */
+body.bunkerlabs .badge{
+  display:inline-flex;
+  align-items:center;
+  height: 26px;
+  padding: 0 .6rem;
+  border-radius: var(--radius-xs);
+  border:1px solid var(--border);
+  font-size:.85rem;
+}
+
+/* Tarjetas / filas */
+body.bunkerlabs .card,
+body.bunkerlabs .machine-row{
   background: var(--surface);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
+body.bunkerlabs .machine-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: var(--gap);
+  padding: 14px 16px;
+  margin: 10px 0;
+}
+body.bunkerlabs .machine-main{ display:grid; gap:10px; }
+body.bunkerlabs .machine-name{
+  font-weight:600;
+  font-size:1.02rem;
+  letter-spacing:.2px;
+  cursor:pointer;
+}
+body.bunkerlabs .machine-desc{ color: var(--muted); line-height:1.45; }
+body.bunkerlabs .machine-actions{ display:flex; gap:8px; align-items:center; }
 
+/* Inputs / forms */
 body.bunkerlabs input[type="text"],
 body.bunkerlabs input[type="password"],
 body.bunkerlabs input[type="url"],
@@ -143,17 +213,74 @@ body.bunkerlabs textarea{
   background: #170f22;
   color: var(--text);
   border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  height: 38px;
+  padding: 0 .75rem;
+  transition: box-shadow .12s ease, border-color .12s ease;
 }
+body.bunkerlabs textarea{ min-height:110px; padding:.7rem .8rem; }
 body.bunkerlabs input:focus,
 body.bunkerlabs select:focus,
 body.bunkerlabs textarea:focus{
   outline: none;
-  box-shadow: 0 0 0 3px rgba(155,27,207,.28);
-  border-color: rgba(239,139,237,.45);
+  box-shadow: 0 0 0 3px rgba(155,27,207,.24);
+  border-color: var(--border-strong);
 }
 
+/* Login card reutilizable */
 body.bunkerlabs .bunker-card{
-  background: #170f22;
+  background: var(--surface);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+/* Modales minimal */
+body.bunkerlabs .modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(9,6,12,.55);
+  z-index: 60;
+}
+body.bunkerlabs .modal.open{ display:flex; }
+body.bunkerlabs .modal-card{
+  width: min(880px, 92vw);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+body.bunkerlabs .modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+body.bunkerlabs .modal-title{ font-size:1.05rem; font-weight:600; letter-spacing:.2px; }
+body.bunkerlabs .modal-close{
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  width: 32px; height: 32px;
+  display:grid; place-items:center;
+  cursor:pointer;
+  color:#fff;
+}
+body.bunkerlabs .modal-close:hover{
+  background: rgba(155,27,207,.14);
+  border-color: var(--border-strong);
+}
+body.bunkerlabs .modal-body{ padding: 16px; }
+body.bunkerlabs .modal-footer{
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display:flex; gap:10px; justify-content:flex-end;
 }
