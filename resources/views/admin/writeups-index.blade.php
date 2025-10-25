@@ -40,7 +40,7 @@
             @auth
               @if(auth()->user()->isAdmin())
                 <td>
-                  <form method="POST" action="{{ route('admin.writeups.destroy', $item) }}"
+                  <form method="POST" action="{{ route('dockerlabs.admin.writeups.destroy', $item) }}"
                         onsubmit="return confirm('¿Eliminar este writeup? Esta acción no se puede deshacer.');">
                     @csrf
                     @method('DELETE')

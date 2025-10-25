@@ -56,7 +56,7 @@
                             {{ $m->created_at->diffForHumans() }}
                         </td>
                         <td style="border-bottom:1px solid #ddd; padding:8px;">
-                            <form method="POST" action="{{ route('admin.maquinas.recibidas.prefill', $m->id) }}">
+                            <form method="POST" action="{{ route('dockerlabs.admin.maquinas.recibidas.prefill', $m->id) }}">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Aprobar Máquina</button>
                             </form>

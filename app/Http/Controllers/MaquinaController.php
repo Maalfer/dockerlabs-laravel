@@ -46,12 +46,12 @@ class MaquinaController extends Controller
             EnvioMaquina::whereKey($validated['envio_id'])->delete();
         }
 
-        return redirect()->route('admin')->with('success', 'Máquina agregada exitosamente');
+        return redirect()->route('dockerlabs.admin.dashboard')->with('success', 'Máquina agregada exitosamente');
     }
 
     public function destroy(Maquina $maquina)
     {
         $maquina->delete();
-        return redirect()->route('admin')->with('success', 'Máquina eliminada correctamente');
+        return redirect()->route('dockerlabs.admin.dashboard')->with('success', 'Máquina eliminada correctamente');
     }
 }
