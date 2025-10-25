@@ -11,10 +11,15 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     // GET /login
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        return view('login');
+        if ($request->session()->get('bunkerlabs_authenticated')) {
+            return redirect()->route('bunkerlabs.home');
+        }
+    
+        return view('login-bunkerlabs');
     }
+
 
     // POST /login
     public function login(Request $request)
@@ -39,6 +44,11 @@ class AuthController extends Controller
     // GET /login-bunkerlabs
     public function showLoginBunker()
     {
+        // Si ya tengo acceso al búnker, voy directo al home del búnker
+        if (session('bunkerlabs_authenticated')) {
+            return redirect()->route('bunkerlabs.home');
+        }
+
         return view('login-bunkerlabs');
     }
 

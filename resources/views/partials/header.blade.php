@@ -3,7 +3,11 @@
     <nav class="site-nav">
         <a href="{{ route('dockerlabs.home') }}">Inicio</a>
         <a href="{{ route('dockerlabs.enviar-maquina.form') }}">Enviar máquina</a>
-        <a href="{{ route('bunkerlabs.login') }}" class="nav-link">El Bunker</a>
+
+        @php($bunker = session('bunkerlabs_authenticated'))
+        <a href="{{ $bunker ? route('bunkerlabs.home') : route('bunkerlabs.login') }}" class="nav-link">
+            El Bunker
+        </a>
 
         <a href="/">Opciones</a>
         <a href="{{ route('dockerlabs.mis-writeups.index') }}">Mis Writeups</a>
