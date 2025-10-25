@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\MaquinaRecibidaController;
 use App\Http\Controllers\MisWriteupsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
+// 👉 añadimos el controlador de tokens de admin
+use App\Http\Controllers\Admin\TokenAdminController;
 
 /**
  * Todas las rutas principales del proyecto DockerLabs.
@@ -103,4 +105,33 @@ Route::as('dockerlabs.')->group(function () {
     // ============================
     Route::post('/writeups-temporal', [WriteupTemporalController::class, 'store'])
         ->name('writeups-temporal.store');
+});
+
+/**
+ * Rutas adicionales SIN prefijo de nombre para coincidir con vistas/controladores
+ * que usan nombres "admin.*" (no "dockerlabs.admin.*").
+ * Se aplican los mismos middlewares de admin.
+ */
+Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
+    // ——— Máquinas (coinciden con admin.blade.php) ———
+    Route::post('/admin/maquinas', [MaquinaController::class, 'store'])
+        ->name('admin.maquinas.store');
+
+    Route::delete('/admin/maquinas/{maquina}', [MaquinaController::class, 'destroy'])
+        ->name('admin.maquinas.destroy');
+
+    // ——— Bunker Tokens (usados por el modal JS en admin.blade.php) ———
+    // Lista (JSON)
+    Route::get('/admin/bunkerlabs/tokens', [TokenAdminController::class, 'index'])
+        ->name('admin.bunker.tokens.index');
+
+    // Crear (devuelve JSON con 'plain' para mostrar el token una vez)
+    Route::post('/admin/bunkerlabs/tokens', [TokenAdminController::class, 'store'])
+        ->name('admin.bunker.tokens.store');
+
+    // Activar/Desactivar (POST)
+    Route::post('/admin/bunkerlabs/tokens/{id}/toggle', [TokenAdminController::class, 'toggle']);
+
+    // Eliminar (DELETE)
+    Route::delete('/admin/bunkerlabs/tokens/{id}', [TokenAdminController::class, 'destroy']);
 });
