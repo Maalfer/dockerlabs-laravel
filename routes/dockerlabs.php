@@ -15,7 +15,6 @@ use App\Http\Controllers\Admin\MaquinaRecibidaController;
 use App\Http\Controllers\MisWriteupsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
-// 👉 añadimos el controlador de tokens de admin
 use App\Http\Controllers\Admin\TokenAdminController;
 
 /**
@@ -31,7 +30,7 @@ Route::as('dockerlabs.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     // ============================
-    // AUTENTICACIÓN
+    // AUTENTICACI�N
     // ============================
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -46,7 +45,7 @@ Route::as('dockerlabs.')->group(function () {
         ->name('logout');
 
     // ============================
-    // PERFIL Y GESTIÓN DE ROLES
+    // PERFIL Y GESTI�N DE ROLES
     // ============================
     Route::middleware('auth')->group(function () {
         Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -60,7 +59,7 @@ Route::as('dockerlabs.')->group(function () {
     });
 
     // ============================
-    // ENVÍO DE MÁQUINAS
+    // ENV�O DE M�QUINAS
     // ============================
     Route::get('/enviar-maquina', [EnviarMaquinaController::class, 'create'])->name('enviar-maquina.form');
     Route::post('/enviar-maquina', [EnviarMaquinaController::class, 'store'])->name('enviar-maquina.store');
@@ -74,18 +73,22 @@ Route::as('dockerlabs.')->group(function () {
     });
 
     // ============================
-    // ÁREA DE ADMINISTRACIÓN
+    // �REA DE ADMINISTRACI�N
     // ============================
     Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
 
         // Dashboard principal de admin
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 
-        // Máquinas recibidas
+        // M�quinas recibidas
         Route::get('/admin/maquinas-recibidas', [MaquinaRecibidaController::class, 'index'])
             ->name('admin.maquinas.recibidas');
 
-        // Writeups temporales (pendientes de revisión)
+        // \u279c Prefill desde EnvioMaquina hacia el formulario de creaci�n
+        Route::post('/admin/maquinas-recibidas/{id}/prefill', [MaquinaRecibidaController::class, 'prefill'])
+            ->name('admin.maquinas.recibidas.prefill');
+
+        // Writeups temporales (pendientes de revisi�n)
         Route::get('/admin/writeups-temporal', [WriteupTemporalAdminController::class, 'index'])
             ->name('admin.writeups-temporal.index');
         Route::post('/admin/writeups-temporal/{id}/approve', [WriteupTemporalAdminController::class, 'approve'])
@@ -113,14 +116,14 @@ Route::as('dockerlabs.')->group(function () {
  * Se aplican los mismos middlewares de admin.
  */
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    // ——— Máquinas (coinciden con admin.blade.php) ———
+    // \u2014\u2014\u2014 M�quinas (coinciden con admin.blade.php) \u2014\u2014\u2014
     Route::post('/admin/maquinas', [MaquinaController::class, 'store'])
         ->name('admin.maquinas.store');
 
     Route::delete('/admin/maquinas/{maquina}', [MaquinaController::class, 'destroy'])
         ->name('admin.maquinas.destroy');
 
-    // ——— Bunker Tokens (usados por el modal JS en admin.blade.php) ———
+    // \u2014\u2014\u2014 Bunker Tokens (usados por el modal JS en admin.blade.php) \u2014\u2014\u2014
     // Lista (JSON)
     Route::get('/admin/bunkerlabs/tokens', [TokenAdminController::class, 'index'])
         ->name('admin.bunker.tokens.index');
