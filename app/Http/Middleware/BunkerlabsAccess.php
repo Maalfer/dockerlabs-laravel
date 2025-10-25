@@ -10,7 +10,7 @@ class BunkerlabsAccess
     public function handle(Request $request, Closure $next)
     {
         if (!$request->session()->get('bunkerlabs_authenticated')) {
-            return redirect()->route('login.bunkerlabs')->withErrors([
+            return redirect()->route('bunkerlabs.login')->withErrors([
                 'token' => 'Necesitas un token válido para acceder.'
             ]);
         }
