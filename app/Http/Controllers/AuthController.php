@@ -67,7 +67,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $request->session()->put('bunkerlabs_authenticated', true);
 
-        return redirect()->route('home.bunkerlabs');
+        return redirect()->route('bunkerlabs.home');
     }
 
     // ====== Fin Bunkerlabs ======
