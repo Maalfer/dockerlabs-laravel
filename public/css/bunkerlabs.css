@@ -1,0 +1,144 @@
+/* public/css/bunkerlabs.css */
+
+/* 
+   Scope: sólo cuando el <body> tenga la clase .bunkerlabs.
+   Sobrescribimos variables y algunos detalles para el tema morado/rosa.
+*/
+
+body.bunkerlabs{
+  /* Fondo y superficies con matices púrpura */
+  --bg-deep:#120a16;         /* muy oscuro púrpura */
+  --bg-elev:#1a0f23;
+  --surface:#1e132b;
+  --surface-2:#1a1027;
+
+  /* Paleta principal morado/rosa */
+  --brand-700:#5a008b;
+  --brand-600:#7600a8;
+  --brand-500:#9b1bcf;   /* color principal */
+  --brand-400:#c545e6;
+  --brand-300:#ef8bed;   /* hover/links */
+  --brand-200:#ffd2f7;
+
+  /* Tipografía y bordes */
+  --text:#f3e9f7;
+  --muted:#cdb9d8;
+  --border:rgba(255, 182, 240, 0.17);
+  --shadow:0 12px 32px rgba(53, 0, 80, .45);
+
+  /* Accents/estados (puedes ajustar si quieres mayor contraste por dificultad) */
+  --ok-600:#22c55e;
+  --warn-600:#f59e0b;
+  --danger-600:#e11d48;
+
+  /* Gradientes y selection */
+  --grad-1: radial-gradient(1200px 700px at 10% -10%, rgba(155,27,207,.18) 0%, transparent 60%);
+  --grad-2: radial-gradient(900px 500px at 110% -10%, rgba(197,69,230,.12) 0%, transparent 60%);
+}
+
+body.bunkerlabs ::selection{
+  background: rgba(239,139,237,.35);
+  color:#fff;
+}
+
+/* Header y Footer con el nuevo tema */
+body.bunkerlabs .site-header{
+  background: linear-gradient(180deg, rgba(155,27,207,.22), rgba(26,15,35,.65));
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+body.bunkerlabs .site-header h1{
+  color: var(--brand-200);
+}
+body.bunkerlabs .site-nav a{
+  color: var(--brand-300);
+}
+body.bunkerlabs .site-nav a:hover{
+  color:#fff;
+  text-shadow: 0 0 6px rgba(197,69,230,.35);
+}
+
+body.bunkerlabs .site-footer{
+  background: linear-gradient(0deg, rgba(155,27,207,.12), rgba(26,15,35,.55));
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* Botones genéricos que heredan de home.css pero con nueva paleta */
+body.bunkerlabs .btn,
+body.bunkerlabs button,
+body.bunkerlabs .button{
+  border-color: var(--border);
+  color: #fff;
+}
+body.bunkerlabs .btn-primary,
+body.bunkerlabs button.btn-primary{
+  background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
+  border: 1px solid rgba(239,139,237,.35);
+}
+body.bunkerlabs .btn-primary:hover{
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+body.bunkerlabs .btn-secondary{
+  background: var(--surface-2);
+  color: var(--brand-200);
+  border: 1px solid var(--border);
+}
+body.bunkerlabs .btn-secondary:hover{
+  background: var(--surface);
+  color:#fff;
+}
+
+/* Chips/filtros de dificultad en home-bunkerlabs */
+body.bunkerlabs .chip{
+  border-color: var(--border);
+  color: var(--brand-200);
+}
+body.bunkerlabs .chip.active{
+  background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
+  color:#fff;
+  border-color: rgba(239,139,237,.35);
+}
+/* Mantén algunos colores por dificultad si quieres diferenciarlos, 
+   o unifícalos al tema. Aquí los unificamos al tema: */
+body.bunkerlabs .chip-cyan,
+body.bunkerlabs .chip-green,
+body.bunkerlabs .chip-amber,
+body.bunkerlabs .chip-red{
+  background: rgba(155,27,207,.18);
+  color: var(--brand-200);
+}
+
+/* Tarjetas generales de listas */
+body.bunkerlabs .card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* Inputs / forms (login-bunkerlabs) */
+body.bunkerlabs input[type="text"],
+body.bunkerlabs input[type="password"],
+body.bunkerlabs input[type="url"],
+body.bunkerlabs input[type="date"],
+body.bunkerlabs select,
+body.bunkerlabs textarea{
+  background: #170f22;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+body.bunkerlabs input:focus,
+body.bunkerlabs select:focus,
+body.bunkerlabs textarea:focus{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(155,27,207,.28);
+  border-color: rgba(239,139,237,.45);
+}
+
+/* Clase de tarjeta usada en login-bunkerlabs (si la conservas) */
+body.bunkerlabs .bunker-card{
+  background: #170f22;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-bunkerlabs')
 
 @section('title', 'BunkerLabs — Iniciar sesión')
 

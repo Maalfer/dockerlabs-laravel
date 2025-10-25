@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.app-bunkerlabs')
 
 @section('title', 'Bunkerlabs')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/home.css') }}">
+<link rel="stylesheet" href="{{ asset('css/bunkerlabs.css') }}">
 
 <div class="top-bar" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.5rem 1px 1rem; flex-wrap:wrap;">
   <h1 style="margin:0;">Bunker: Máquinas</h1>
