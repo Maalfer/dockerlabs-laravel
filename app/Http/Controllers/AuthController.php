@@ -17,7 +17,7 @@ class AuthController extends Controller
             return redirect()->route('bunkerlabs.home');
         }
     
-        return view('login-bunkerlabs');
+        return view('login');
     }
 
 
