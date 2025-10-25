@@ -3,8 +3,6 @@
 @section('title', 'Bunkerlabs')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/bunkerlabs.css') }}">
-
 <div class="top-bar" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.5rem 1px 1rem; flex-wrap:wrap;">
   <h1 style="margin:0;">Bunker: Máquinas</h1>
   <div class="filters-bar" style="display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:flex-end; padding:.5rem 0 1rem; min-width:320px;">
