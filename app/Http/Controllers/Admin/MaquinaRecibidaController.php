@@ -40,17 +40,17 @@ class MaquinaRecibidaController extends Controller
             'descripcion'     => $descripcionSugerida,
             'dificultad'      => $envio->dificultad ?: 'medio',
             'enlace_descarga' => null,
-
             'autor'           => $envio->autor_nombre,
             'autor_url'       => $envio->autor_enlace,
             'fecha_creacion'  => $fechaIso,
             'writeup'         => $envio->writeup,
-
             'autor_email'     => null,
         ];
 
         session()->flash('prefill_maquina', $prefill);
 
-        return redirect()->route('admin')->with('success', 'Datos pre-cargados desde el envío #' . $envio->id . '.');
+        return redirect()
+            ->route('dockerlabs.admin.dashboard')
+            ->with('success', 'Datos pre-cargados desde el envío #' . $envio->id . '.');
     }
 }
