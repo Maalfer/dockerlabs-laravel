@@ -107,6 +107,17 @@
                            value="{{ old('writeup', $prefill['writeup'] ?? '') }}">
                 </div>
 
+                {{-- NUEVO: Destino de guardado (principal o bunker) --}}
+                @php($destOld = old('destino', 'principal'))
+                <div class="form-row">
+                    <label for="destino">Guardar en</label>
+                    <select id="destino" name="destino" class="form-control" required>
+                        <option value="principal" {{ $destOld==='principal' ? 'selected' : '' }}>Tabla principal (maquinas)</option>
+                        <option value="bunker" {{ $destOld==='bunker' ? 'selected' : '' }}>Bunker (maquinas_bunkerlabs)</option>
+                    </select>
+                    <small class="form-hint">Elige dónde se guardará esta máquina.</small>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Agregar Máquina</button>
             </form>
 

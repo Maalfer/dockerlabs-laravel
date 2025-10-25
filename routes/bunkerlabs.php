@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\BunkerToken;
 use App\Http\Controllers\AuthController as CoreAuth;
+use App\Models\MaquinaBunker;
 
 Route::prefix('bunkerlabs')->as('bunkerlabs.')->group(function () {
 
@@ -13,19 +14,30 @@ Route::prefix('bunkerlabs')->as('bunkerlabs.')->group(function () {
     Route::get('/login', [CoreAuth::class, 'showLoginBunker'])->name('login');
     Route::post('/login', [CoreAuth::class, 'loginBunker'])->name('login.submit');
 
-    // ====== P�gina principal del bunker (home) ======
+    // ====== Página principal del bunker (home) ======
     Route::get('/', function (Request $request) {
         if (!$request->session()->get('bunkerlabs_authenticated')) {
             return redirect()->route('bunkerlabs.login')->withErrors([
-                'token' => 'Necesitas un token v�lido para acceder.',
+                'token' => 'Necesitas un token válido para acceder.',
             ]);
         }
 
+        // Filtro opcional por dificultad: muy-facil | facil | medio | dificil
+        $f = $request->query('dificultad');
+
+        $maquinas = MaquinaBunker::query()
+            ->when($f, fn ($q) => $q->difficulty($f)) // requiere scope difficulty en el modelo
+            ->latest('id')
+            ->get();
+
         // Usuario autenticado correctamente -> vista principal del bunker
-        return view('home-bunkerlabs');
+        return view('home-bunkerlabs', [
+            'maquinas' => $maquinas,
+            'f'        => $f,
+        ]);
     })->name('home');
 
-    // ====== Zona de administraci�n (tokens) ======
+    // ====== Zona de administración (tokens) ======
     Route::middleware([
         'auth',
         \App\Http\Middleware\RoleMiddleware::class . ':admin'
